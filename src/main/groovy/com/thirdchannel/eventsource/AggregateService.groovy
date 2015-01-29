@@ -14,6 +14,10 @@ public interface AggregateService {
 
 
     Aggregate get(UUID id)
+    List<Aggregate> getAll(List<UUID> ids)
+    Aggregate getOrCreate(UUID id, String aggregateDescription)
+
+    Boolean exists(UUID aggregateId)
     /**
      * Used to grab the current revision of the aggregate, ideally checked before saving events
      * to ensure that items are not placed out of order
@@ -21,8 +25,7 @@ public interface AggregateService {
      * @param id
      * @return
      */
-    //Integer getCurrentRevision(UUID id)
-    Aggregate findAllByIdsInList(List<UUID> ids)
+    Integer getCurrentRevision(UUID id)
 
     /**
      * Should persist the aggregate & its events within a transaction.
@@ -35,7 +38,7 @@ public interface AggregateService {
      * @param events
      * @return
      */
-    boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events)
+    Boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events)
 
 
 

@@ -1,19 +1,25 @@
 buildscript {
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.1.RELEASE")
-    }
     repositories {
+        mavenLocal()
         jcenter()
+    }
+    dependencies {
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.3'
     }
 }
 
 apply plugin: 'groovy'
 apply plugin: "idea"
 apply plugin: "eclipse"
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: "com.jfrog.artifactory"
+
 
 jar {
-    baseName = 'amalgamation'
-    version =  '0.1.0'
+    group = 'com.thirdchannel'
+    baseName = 'eventsource'
+    version =  '0.0.1'
 }
 
 
@@ -26,10 +32,90 @@ repositories {
 dependencies {
     compile "org.codehaus.groovy:groovy-all:2.3.9"
 
-    //compile "org.apache.logging.log4j:log4j-core:2.1"
     compile "org.slf4j:slf4j-api:1.7.10"
-
 
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
 }
+
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+// UPDATE THE VERSION!
+group = 'com.thirdchannel'
+version = '0.0.1'
+
+ext.isSnapshot = version.contains('SNAPSHOT')
+
+jar {
+    manifest {
+        attributes 'Implementation-Title':  'ThirdChannel Event Source',
+                'Implementation-Version': version,
+                'Specification-Version':  version
+    }
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+    archives javadocJar
+}
+
+task createPom  {
+    pom {
+        project {
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+        }
+    }.writeTo("$buildDir/pom.xml")
+}
+
+artifactory {
+    contextUrl = "${System.getenv('ARTIFACTORY_3C_URL')}"
+    publish {
+        repository {
+            repoKey = isSnapshot ? 'internal-libs-snapshot-local' : 'internal-libs-release-local'
+            username = "${System.getenv('ARTIFACTORY_3C_USERNAME')}"
+            password = "${System.getenv('ARTIFACTORY_3C_PASSWORD')}"
+            maven = true
+        }
+        defaults {
+            publications ('mavenJava')
+            publishBuildInfo = true
+            publishArtifacts = true
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourceJar {
+                classifier 'sources'
+            }
+
+            artifact javadocJar {
+                classifier 'javadoc'
+            }
+        }
+    }
+}
+
 

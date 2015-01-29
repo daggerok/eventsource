@@ -23,12 +23,27 @@ class EventSourceServiceSpec extends Specification {
             }
 
             @Override
-            Aggregate findAllByIdsInList(List<UUID> ids) {
-                null
+            List<Aggregate> getAll(List<UUID> ids) {
+                return null
             }
 
             @Override
-            boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events) {
+            Aggregate getOrCreate(UUID id, String aggregateDescription) {
+                return null
+            }
+
+            @Override
+            Boolean exists(UUID aggregateId) {
+                return null
+            }
+
+            @Override
+            Integer getCurrentRevision(UUID id) {
+                return null
+            }
+
+            @Override
+            Boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events) {
                 false
             }
         }
@@ -55,12 +70,27 @@ class EventSourceServiceSpec extends Specification {
             }
 
             @Override
-            Aggregate findAllByIdsInList(List<UUID> ids) {
-                null
+            List<Aggregate> getAll(List<UUID> ids) {
+                return null
             }
 
             @Override
-            boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events) {
+            Aggregate getOrCreate(UUID id, String aggregateDescription) {
+                return null
+            }
+
+            @Override
+            Boolean exists(UUID aggregateId) {
+                return null
+            }
+
+            @Override
+            Integer getCurrentRevision(UUID id) {
+                return null
+            }
+
+            @Override
+            Boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events) {
                 true
             }
         }
@@ -86,7 +116,7 @@ class EventSourceServiceSpec extends Specification {
         bar.revision == 3
         foo1.revision == 1
         foo2.revision == 2
-        foo3.revision == 2
+        foo3.revision == 3
 
 
     }
