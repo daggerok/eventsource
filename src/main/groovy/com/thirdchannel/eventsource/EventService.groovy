@@ -20,4 +20,7 @@ public interface EventService {
     List<Event> findAllEventsForAggregateSinceDate(Aggregate aggregate, Date date)
     List<Event> findAllEventsForAggregateInRange(Aggregate, Date begin, Date end)
 
+    boolean save(Aggregate aggregate, List<Event> events)
+    boolean save(Aggregate aggregate, Event event)
+
 }

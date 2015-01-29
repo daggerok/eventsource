@@ -33,7 +33,7 @@ class EventSourceServiceSpec extends Specification {
             }
 
             @Override
-            Boolean exists(UUID aggregateId) {
+            boolean exists(UUID aggregateId) {
                 return null
             }
 
@@ -43,7 +43,17 @@ class EventSourceServiceSpec extends Specification {
             }
 
             @Override
-            Boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events) {
+            boolean update(Aggregate aggregate, Integer expectedRevision) {
+                return null
+            }
+
+            @Override
+            boolean save(Aggregate aggregate) {
+                return null
+            }
+
+            @Override
+            boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events) {
                 false
             }
         }
@@ -80,7 +90,7 @@ class EventSourceServiceSpec extends Specification {
             }
 
             @Override
-            Boolean exists(UUID aggregateId) {
+            boolean exists(UUID aggregateId) {
                 return null
             }
 
@@ -90,7 +100,17 @@ class EventSourceServiceSpec extends Specification {
             }
 
             @Override
-            Boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events) {
+            boolean update(Aggregate aggregate, Integer expectedRevision) {
+                return null
+            }
+
+            @Override
+            boolean save(Aggregate aggregate) {
+                return null
+            }
+
+            @Override
+            boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events) {
                 true
             }
         }
