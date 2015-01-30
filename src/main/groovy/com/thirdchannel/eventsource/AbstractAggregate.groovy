@@ -8,7 +8,7 @@ import groovy.transform.ToString
  */
 @CompileStatic
 @ToString
-class AbstractAggregate implements Aggregate {
+abstract class AbstractAggregate implements Aggregate {
 
     UUID id = UUID.randomUUID()
     String aggregateDescription

@@ -19,14 +19,14 @@ abstract class AbstractEvent implements Event {
     Date date = new Date()
     String data
     String userId
-    final String clazz = this.class.toString()
+    final String clazz = this.class.name
 
     void setRevision(final Integer r) {
         // allow us to set the revision the first time
         if (!revision) {
             revision = r
         } else {
-            throw new ReadOnlyPropertyException("revision", this.class.toString())
+            throw new ReadOnlyPropertyException("revision", clazz)
         }
 
     }
