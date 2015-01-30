@@ -36,13 +36,10 @@ class EventSourceService {
         // pass to the aggregateService for persisting, with the idea that it will save both the Aggregate and events
         // within a Transaction, if possible
         Integer oldRevision = aggregate.revision
-        for (Event event: aggregate.getUncommittedEvents()) {
-            //increment the revision for both the aggregate and its events
-            aggregate.revision++
-            event.revision = aggregate.revision
-            //todo: add a revision check here, or rely on the implementations to do that?
+        // courtesy of burt:
+        // update the aggregate revision and set the event equal to that new revision
+        aggregate.uncommittedEvents.each { it.revision = ++aggregate.revision }
 
-        }
         if (aggregateService.save(aggregate, oldRevision, aggregate.getUncommittedEvents())) {
             // finally, mark the aggregate's changes as committed to 'flush' the events and prepare for more
             log.debug("Uncomitted Events persisted. Clearly events from aggregate")
