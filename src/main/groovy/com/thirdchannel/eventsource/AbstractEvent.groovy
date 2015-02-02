@@ -13,7 +13,7 @@ import groovy.transform.ToString
 @CompileStatic
 abstract class AbstractEvent implements Event {
 
-    final UUID id = UUID.randomUUID()
+    UUID id = UUID.randomUUID()
     Integer revision
     UUID aggregateId
     Date date = new Date()

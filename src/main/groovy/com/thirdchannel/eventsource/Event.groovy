@@ -43,6 +43,8 @@ public interface Event {
      */
     String getData()
 
+    void setData(String s)
+
     /**
      * The user id of the user responsible for the event's generation. Return type is String in order to help generalize
      * what can be used as the user id (e.g. String, some int, perhaps a UUID.

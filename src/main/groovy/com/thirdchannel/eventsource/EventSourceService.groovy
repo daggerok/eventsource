@@ -21,6 +21,10 @@ class EventSourceService {
         aggregateService.get(aggregateId)
     }
 
+    Aggregate getOrCreate(UUID aggregateId, String description) {
+        aggregateService.getOrCreate(aggregateId, description)
+    }
+
 //    Aggregate findOrCreateById(UUID aggregateId) {
 //
 //    }
