@@ -14,8 +14,6 @@ class EventSourceService {
 
     SnapshotService snapshotService
 
-
-
     // find or create aggregate
     Aggregate get(UUID aggregateId) {
         aggregateService.get(aggregateId)
@@ -56,9 +54,18 @@ class EventSourceService {
 
     }
 
+    /*
+        The majority of these methods are simply pass-throughs, with the purpose of keeping a common barrier behind
+        EventSourceService
+     */
+
     void loadCurrentState(Aggregate aggregate) {
         // todo: add snapshot behavior
         aggregate.loadFromPastEvents(eventService.findAllEventsForAggregate(aggregate))
+    }
+
+    void loadCurrentState(List<Aggregate> aggregates) {
+        eventService.loadEventsForAggregates(aggregates)
     }
 
     void loadHistoryUpTo(Aggregate aggregate, Integer targetRevision) {
@@ -71,6 +78,10 @@ class EventSourceService {
 
     void loadHistoryInRange(Aggregate aggregate, Date begin, Date end) {
         aggregate.loadFromPastEvents(eventService.findAllEventsForAggregateInRange(aggregate, begin, end))
+    }
+
+    void loadHistoryInRange(List<Aggregate> aggregates, Date begin, Date end) {
+        eventService.loadEventsForAggregates(aggregates, begin, end)
     }
 
 
