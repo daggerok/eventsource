@@ -27,6 +27,7 @@ public interface Event {
     void setRevision(Integer revision)
 
     UUID getAggregateId()
+    void setAggregateId(UUID id)
 
     Date getDate()
 

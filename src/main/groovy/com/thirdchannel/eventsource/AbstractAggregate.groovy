@@ -39,6 +39,8 @@ abstract class AbstractAggregate implements Aggregate {
     }
 
     private void runEvent(Event event, boolean newEvent) {
+        //mark 'ownership' of the event the moment it's run
+        event.aggregateId = this.id
         event.process this
         if (newEvent) {
             uncommittedEvents.add event
