@@ -15,14 +15,6 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: "com.jfrog.artifactory"
 
-
-jar {
-    group = 'com.thirdchannel'
-    baseName = 'eventsource'
-    version =  '0.0.1'
-}
-
-
 repositories {
     jcenter()
     maven { url 'http://clinker.netty.io/nexus/content/repositories/snapshots' }
@@ -37,21 +29,20 @@ dependencies {
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
 }
 
-
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 // UPDATE THE VERSION!
 group = 'com.thirdchannel'
-version = '0.0.1'
+version = '0.0.1-SNAPSHOT'
 
 ext.isSnapshot = version.contains('SNAPSHOT')
 
 jar {
     manifest {
         attributes 'Implementation-Title':  'ThirdChannel Event Source',
-                'Implementation-Version': version,
-                'Specification-Version':  version
+                   'Implementation-Version': version,
+                   'Specification-Version':  version
     }
 }
 
@@ -117,5 +108,3 @@ publishing {
         }
     }
 }
-
-
