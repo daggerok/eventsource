@@ -1,9 +1,6 @@
 package com.thirdchannel.eventsource
 
 /**
- * @author steve pember
- *
- *
  * An event reflects a change that occurred within your system, as well as the id of the user which performed the event.
  * Events reflect the *intent* of user action, based on the successful completion of a user action or command.
  *
@@ -16,14 +13,13 @@ package com.thirdchannel.eventsource
  *
  * However, if
  *
- *
+ * @author steve pember
  */
-public interface Event {
+interface Event {
 
     UUID getId()
 
     Integer getRevision()
-
     void setRevision(Integer revision)
 
     UUID getAggregateId()
@@ -39,18 +35,16 @@ public interface Event {
     String getClazz()
 
     /**
-     *
-     * @return String the aforementioned serialized data unique to this event. Recommended to be JSON
+     * @return the aforementioned serialized data unique to this event. Recommended to be JSON
      */
     String getData()
-
     void setData(String s)
 
     /**
      * The user id of the user responsible for the event's generation. Return type is String in order to help generalize
      * what can be used as the user id (e.g. String, some int, perhaps a UUID.
      *
-     * @return String the user Id.
+     * @return the user Id.
      */
     String getUserId()
 
@@ -59,18 +53,12 @@ public interface Event {
     /**
      * Copy individual fields out of the data object and into the sub class
      *
-     *
      * @param data the converted
      */
     void restoreData(Map data)
 
     /**
      * Apply this event to the aggregate. Should somehow apply data contained within this event into the aggregate
-     *
-     * @param root
      */
     void process(Aggregate root)
-
-
-
 }

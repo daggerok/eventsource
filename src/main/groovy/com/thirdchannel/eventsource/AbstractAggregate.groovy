@@ -16,24 +16,20 @@ abstract class AbstractAggregate implements Aggregate {
 
     private final List<Event> uncommittedEvents = []
 
-    @Override
     List<Event> getUncommittedEvents() {
         uncommittedEvents
     }
 
-    @Override
     void markEventsAsCommitted() {
         uncommittedEvents.clear()
     }
 
-    @Override
     void loadFromPastEvents(List<Event> events) {
-        for(Event event : events) {
+        for (Event event : events) {
             runEvent(event, false)
         }
     }
 
-    @Override
     void applyChange(Event event) {
         runEvent(event, true)
     }

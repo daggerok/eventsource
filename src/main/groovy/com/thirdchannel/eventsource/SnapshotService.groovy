@@ -1,14 +1,11 @@
 package com.thirdchannel.eventsource
 
 /**
- * @author steve pember
- *
  * DAO Service for loading and persisting {@link Snapshot}s.
+ *
+ * @author steve pember
  */
-public interface SnapshotService {
-
+interface SnapshotService {
     int getInterval()
     void setInterval()
-
-
 }

@@ -1,6 +1,5 @@
 package com.thirdchannel.eventsource
 
-import com.thirdchannel.eventsource.AbstractAggregate
 import groovy.transform.CompileStatic
 
 /**
@@ -8,8 +7,6 @@ import groovy.transform.CompileStatic
  */
 @CompileStatic
 class Bar extends AbstractAggregate {
-
     String name
-    int count = 0
-
+    int count
 }

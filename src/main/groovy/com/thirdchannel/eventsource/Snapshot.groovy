@@ -3,6 +3,4 @@ package com.thirdchannel.eventsource
 /**
  * @author steve
  */
-public interface Snapshot {
-
-}
+interface Snapshot {}

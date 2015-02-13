@@ -7,7 +7,6 @@ import groovy.transform.ToString
 /**
  * @author Steve Pember
  */
-
 @EqualsAndHashCode
 @ToString
 @CompileStatic
@@ -28,7 +27,5 @@ abstract class AbstractEvent implements Event {
         } else {
             throw new ReadOnlyPropertyException("revision", clazz)
         }
-
     }
-
 }

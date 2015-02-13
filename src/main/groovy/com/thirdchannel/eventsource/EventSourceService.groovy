@@ -27,13 +27,10 @@ class EventSourceService {
 //
 //    }
     /**
-     * Saves an aggregate and it's uncomitted events. Applies revision updates to the
-     *
-     * @param aggregate
-     * @param events
+     * Saves an aggregate and its uncommitted events. Applies revision updates to the
      */
     boolean save(Aggregate aggregate) {
-        // save Uncomitted events. For each uncomitted event,increment the revision on the aggregate and set the
+        // save Uncommitted events. For each uncommitted event,increment the revision on the aggregate and set the
         // revision on the event.
         // pass to the aggregateService for persisting, with the idea that it will save both the Aggregate and events
         // within a Transaction, if possible
@@ -51,7 +48,6 @@ class EventSourceService {
             log.error("AggregateService failed to persist aggregates and events")
             false
         }
-
     }
 
     /*
@@ -84,12 +80,9 @@ class EventSourceService {
         eventService.loadEventsForAggregates(aggregates, begin, end)
     }
 
-
-
     // current aggregate
 
     // process events -> check for revision, check for order of events
-
 
     // events are applied directly onto the aggregate.
     // The event store should be used to persist the uncomitted events on an aggregate, then increments the revision on
@@ -97,7 +90,4 @@ class EventSourceService {
 
     // should be a method for loading events on an aggregate between a date range, on a specific date, all before / all after a date,
     // or all events. The method calls should use snapshot service
-
-
-
 }

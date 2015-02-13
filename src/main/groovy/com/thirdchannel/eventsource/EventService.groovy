@@ -1,11 +1,11 @@
 package com.thirdchannel.eventsource
 
 /**
- * @author steve pember
- *
  * DAO Service for loading and persisting {@link Event}s.
+ *
+ * @author steve pember
  */
-public interface EventService {
+interface EventService {
 
     // get
     // load all from Aggregate
@@ -25,5 +25,4 @@ public interface EventService {
 
     boolean save(Aggregate aggregate, List<Event> events)
     boolean save(Aggregate aggregate, Event event)
-
 }
