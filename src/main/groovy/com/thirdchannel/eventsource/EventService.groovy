@@ -18,7 +18,7 @@ interface EventService {
     List<Event> findAllEventsForAggregate(Aggregate aggregate)
     List<Event> findAllEventsForAggregateSinceRevision(Aggregate aggregate, Integer integer)
     List<Event> findAllEventsForAggregateSinceDate(Aggregate aggregate, Date date)
-    List<Event> findAllEventsForAggregateInRange(Aggregate, Date begin, Date end)
+    List<Event> findAllEventsForAggregateInRange(Aggregate aggregate, Date begin, Date end)
 
     void loadEventsForAggregates(List<Aggregate> aggregates)
     void loadEventsForAggregates(List<Aggregate> aggregates, Date begin, Date end)
