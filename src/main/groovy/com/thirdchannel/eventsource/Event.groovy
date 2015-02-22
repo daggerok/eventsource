@@ -1,5 +1,7 @@
 package com.thirdchannel.eventsource
 
+import groovy.transform.CompileStatic
+
 /**
  * An event reflects a change that occurred within your system, as well as the id of the user which performed the event.
  * Events reflect the *intent* of user action, based on the successful completion of a user action or command.
@@ -15,17 +17,20 @@ package com.thirdchannel.eventsource
  *
  * @author steve pember
  */
+@CompileStatic
 interface Event {
 
     UUID getId()
+    void setId(UUID id)
 
-    Integer getRevision()
-    void setRevision(Integer revision)
+    int getRevision()
+    void setRevision(int revision)
 
     UUID getAggregateId()
     void setAggregateId(UUID id)
 
     Date getDate()
+    void setDate(Date date)
 
     /**
      * Returns the Class name of the event, to be used for mapping data into a POJO
@@ -33,6 +38,8 @@ interface Event {
      * @return String the class name
      */
     String getClazz()
+
+    void setClazz(String clazz)
 
     /**
      * @return the aforementioned serialized data unique to this event. Recommended to be JSON
@@ -47,6 +54,8 @@ interface Event {
      * @return the user Id.
      */
     String getUserId()
+
+    void setUserId(String userId)
 
     // todo: consider a process Id or command Id field? This would help group events by the action which generated them
 

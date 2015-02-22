@@ -12,20 +12,12 @@ import groovy.transform.ToString
 @CompileStatic
 abstract class AbstractEvent implements Event {
 
-    UUID id = UUID.randomUUID()
-    Integer revision
-    UUID aggregateId
-    Date date = new Date()
-    String data
-    String userId
-    final String clazz = this.class.name
-
-    void setRevision(final Integer r) {
+    void setRevision(final int r) {
         // allow us to set the revision the first time
-        if (!revision) {
-            revision = r
+        if (!this.revision) {
+            this.revision = r
         } else {
-            throw new ReadOnlyPropertyException("revision", clazz)
+            throw new ReadOnlyPropertyException("revision", getClazz())
         }
     }
 }

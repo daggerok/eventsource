@@ -5,10 +5,13 @@ package com.thirdchannel.eventsource
  */
 interface Aggregate {
     UUID getId()
+    void setId(UUID id)
 
     String getAggregateDescription()
+    void setAggregateDescription(String aggregateDescription)
 
     int getRevision()
+    void setRevision(int revision)
 
     /**
      * Internally maintains a list of uncommitted events
@@ -16,6 +19,7 @@ interface Aggregate {
      * @return {@link Event}s that have not yet been persisted to the store
      */
     List<Event> getUncommittedEvents()
+    void setUncommittedEvents(List<Event> events)
 
     void markEventsAsCommitted()
 

@@ -10,15 +10,6 @@ import groovy.transform.ToString
 @ToString
 abstract class AbstractAggregate implements Aggregate {
 
-    UUID id = UUID.randomUUID()
-    String aggregateDescription
-    int revision = 0
-
-    private final List<Event> uncommittedEvents = []
-
-    List<Event> getUncommittedEvents() {
-        uncommittedEvents
-    }
 
     void markEventsAsCommitted() {
         uncommittedEvents.clear()
