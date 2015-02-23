@@ -9,7 +9,6 @@ import groovy.transform.ToString
 @CompileStatic
 @ToString
 class Bar extends AbstractAggregate {
-
     String name
     int count
 }

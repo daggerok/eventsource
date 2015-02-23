@@ -3,11 +3,11 @@ package com.thirdchannel.eventsource
 import groovy.transform.CompileStatic
 
 /**
- * An event reflects a change that occurred within your system, as well as the id of the user which performed the event.
- * Events reflect the *intent* of user action, based on the successful completion of a user action or command.
+ * Reflects a change that occurred within your system, as well as the id of the user which performed the event.
+ * Reflects the *intent* of user action, based on the successful completion of a user action or command.
  *
- * An event should save its 'transient' data as a json string in the database, and restore it on load. This helps keep
- * the database columns for event immutable yet allows for changing of events by simply adding new fields into the underlying json map.
+ * An event should save its 'transient' data as a JSON string in the database, and restore it on load. This helps keep
+ * the database columns for event immutable yet allows for changing of events by simply adding new fields into the underlying JSON map.
  * Furthermore, all events can go in the same table.
  *
  * I realize that this argument can seem ridiculous, e.g. 'Why don't we just serialize ALL or records to json and make
@@ -33,9 +33,9 @@ interface Event {
     void setDate(Date date)
 
     /**
-     * Returns the Class name of the event, to be used for mapping data into a POJO
+     * The Class name of the event, for mapping data into a POJO
      *
-     * @return String the class name
+     * @return the name
      */
     String getClazz()
 
@@ -48,10 +48,10 @@ interface Event {
     void setData(String s)
 
     /**
-     * The user id of the user responsible for the event's generation. Return type is String in order to help generalize
-     * what can be used as the user id (e.g. String, some int, perhaps a UUID.
+     * The id of the user responsible for the event's generation. Return type is String to help generalize
+     * what can be used as the user id (e.g. String, some int, perhaps a UUID).
      *
-     * @return the user Id.
+     * @return the id.
      */
     String getUserId()
 
@@ -60,14 +60,14 @@ interface Event {
     // todo: consider a process Id or command Id field? This would help group events by the action which generated them
 
     /**
-     * Copy individual fields out of the data object and into the sub class
+     * Copy individual fields from the data object to the sub class
      *
      * @param data the converted
      */
     void restoreData(Map data)
 
     /**
-     * Apply this event to the aggregate. Should somehow apply data contained within this event into the aggregate
+     * Apply this event to the aggregate. Should apply event data into the aggregate
      */
     void process(Aggregate root)
 }

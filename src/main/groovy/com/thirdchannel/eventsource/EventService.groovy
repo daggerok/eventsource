@@ -1,7 +1,7 @@
 package com.thirdchannel.eventsource
 
 /**
- * DAO Service for loading and persisting {@link Event}s.
+ * Loads and persists {@link Event}s.
  *
  * @author steve pember
  */
@@ -16,7 +16,7 @@ interface EventService {
     // save all events
 
     List<Event> findAllEventsForAggregate(Aggregate aggregate)
-    List<Event> findAllEventsForAggregateSinceRevision(Aggregate aggregate, Integer integer)
+    List<Event> findAllEventsForAggregateSinceRevision(Aggregate aggregate, int revision)
     List<Event> findAllEventsForAggregateSinceDate(Aggregate aggregate, Date date)
     List<Event> findAllEventsForAggregateInRange(Aggregate aggregate, Date begin, Date end)
 
