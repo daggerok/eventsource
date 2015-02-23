@@ -16,9 +16,7 @@ abstract class AbstractAggregate implements Aggregate {
     }
 
     void loadFromPastEvents(List<Event> events) {
-        for (Event event : events) {
-            runEvent(event, false)
-        }
+        events.each { runEvent it, false }
     }
 
     void applyChange(Event event) {
@@ -27,10 +25,10 @@ abstract class AbstractAggregate implements Aggregate {
 
     private void runEvent(Event event, boolean newEvent) {
         //mark 'ownership' of the event the moment it's run
-        event.aggregateId = this.id
+        event.aggregateId = id
         event.process this
         if (newEvent) {
-            uncommittedEvents.add event
+            uncommittedEvents << event
         }
     }
 }

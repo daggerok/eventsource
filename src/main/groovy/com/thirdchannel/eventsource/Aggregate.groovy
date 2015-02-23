@@ -14,7 +14,7 @@ interface Aggregate {
     void setRevision(int revision)
 
     /**
-     * Internally maintains a list of uncommitted events
+     * Maintains uncommitted events
      *
      * @return {@link Event}s that have not yet been persisted to the store
      */

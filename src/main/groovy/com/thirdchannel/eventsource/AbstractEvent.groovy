@@ -12,12 +12,12 @@ import groovy.transform.ToString
 @CompileStatic
 abstract class AbstractEvent implements Event {
 
-    void setRevision(final int r) {
+    void setRevision(int r) {
         // allow us to set the revision the first time
-        if (!this.revision) {
-            this.revision = r
-        } else {
+        if (revision) {
             throw new ReadOnlyPropertyException("revision", getClazz())
         }
+
+        revision = r
     }
 }

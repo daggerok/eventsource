@@ -14,8 +14,7 @@ class FooEvent extends AbstractEvent {
     Date date = new Date()
     String data
     String userId
-    String clazz = this.class.name
-
+    String clazz = getClass().name
 
     transient String name
     transient int count

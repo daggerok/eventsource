@@ -10,17 +10,8 @@ class Bar extends AbstractAggregate {
 
     UUID id = UUID.randomUUID()
     String aggregateDescription
-    int revision = 0
-
-    private List<Event> uncommittedEvents = []
-
-    List<Event> getUncommittedEvents() {
-        uncommittedEvents
-    }
-
-    void setUncommittedEvents(List<Event> events) {
-        uncommittedEvents = events
-    }
+    int revision
+    List<Event> uncommittedEvents = []
 
     String name
     int count

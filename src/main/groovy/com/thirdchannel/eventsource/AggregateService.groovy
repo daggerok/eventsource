@@ -1,9 +1,9 @@
 package com.thirdchannel.eventsource
 
 /**
- * @author steve
+ * Loads and persists {@link Aggregate}s.
  *
- * DAO Service for loading and persisting {@link Aggregate}s.
+ * @author steve
  */
 interface AggregateService {
 
@@ -17,25 +17,25 @@ interface AggregateService {
     boolean exists(UUID aggregateId)
 
     /**
-     * Used to grab the current revision of the aggregate, ideally checked before saving events
+     * Grabs the current revision of the aggregate, ideally checked before saving events
      * to ensure that items are not placed out of order
      */
-    Integer getCurrentRevision(UUID id)
+    int getCurrentRevision(UUID id)
 
     /**
      * Updates an Aggregate with an expected revision
      */
-    boolean update(Aggregate aggregate, Integer expectedRevision)
+    boolean update(Aggregate aggregate, int expectedRevision)
 
     /**
-     * For saving a new aggregate
+     * Saves a new aggregate.
      */
     boolean save(Aggregate aggregate)
 
     /**
-     * Should persist the aggregate & its events within a transaction.
+     * Persist the aggregate & its events within a transaction.
      * Use the expectedRevision to ensure that we can only update records that have no not been modified since, then
      * save the events. Rollback the transaction (or abort) if the expectedRevision doesn't match
      */
-    boolean save(Aggregate aggregate, Integer expectedRevision, List<Event> events)
+    boolean save(Aggregate aggregate, int expectedRevision, List<Event> events)
 }
