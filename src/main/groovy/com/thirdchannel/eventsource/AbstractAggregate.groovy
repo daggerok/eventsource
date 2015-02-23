@@ -10,6 +10,11 @@ import groovy.transform.ToString
 @ToString
 abstract class AbstractAggregate implements Aggregate {
 
+    UUID id = UUID.randomUUID()
+    String aggregateDescription
+    int revision = 0
+
+    List<Event> uncommittedEvents = []
 
     void markEventsAsCommitted() {
         uncommittedEvents.clear()
@@ -26,11 +31,11 @@ abstract class AbstractAggregate implements Aggregate {
     }
 
     private void runEvent(Event event, boolean newEvent) {
-        //mark 'ownership' of the event the moment it's run
-        event.aggregateId = this.id
         event.process this
         if (newEvent) {
-            uncommittedEvents.add event
+            //mark 'ownership' of the event the moment it's run, if new
+            event.aggregateId = this.id
+            uncommittedEvents.add(event)
         }
     }
 }

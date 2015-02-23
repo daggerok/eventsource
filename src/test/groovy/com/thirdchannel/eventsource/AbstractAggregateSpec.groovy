@@ -7,7 +7,7 @@ import spock.lang.Specification
  */
 class AbstractAggregateSpec extends Specification {
 
-    void "Applying an event should change the aggregate and move the event into uncomitted events"() {
+    void "Applying an event should change the aggregate and move the event into uncommitted events"() {
         when:
         Bar bar = new Bar(aggregateDescription: "Bar Root")
         Event foo = new FooEvent(revision: 0, aggregateId: bar.id, date: new Date(), userId: "1", data: "{'count':1,'name':'test'}")
@@ -20,6 +20,7 @@ class AbstractAggregateSpec extends Specification {
         // the eventSourceService should be responsible for hydrating the event data
         foo.restoreData([count:1, name:"test"])
         bar.applyChange(foo)
+
 
         then:
         bar.uncommittedEvents.size() == 1

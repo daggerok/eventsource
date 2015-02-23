@@ -1,21 +1,14 @@
 package com.thirdchannel.eventsource
 
 import groovy.transform.CompileStatic
+import groovy.transform.ToString
 
 /**
  * @author Steve Pember
  */
+@ToString
 @CompileStatic
 class FooEvent extends AbstractEvent {
-
-    UUID id = UUID.randomUUID()
-    int revision
-    UUID aggregateId
-    Date date = new Date()
-    String data
-    String userId
-    String clazz = this.class.name
-
 
     transient String name
     transient int count
