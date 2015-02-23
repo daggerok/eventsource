@@ -64,7 +64,7 @@ class EventSourceService {
         eventService.loadEventsForAggregates(aggregates)
     }
 
-    void loadHistoryUpTo(Aggregate aggregate, Integer targetRevision) {
+    void loadHistoryUpTo(Aggregate aggregate, int targetRevision) {
         aggregate.loadFromPastEvents(eventService.findAllEventsForAggregateSinceRevision(aggregate, targetRevision))
     }
 

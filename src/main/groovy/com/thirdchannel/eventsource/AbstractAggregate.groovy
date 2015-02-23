@@ -12,7 +12,7 @@ abstract class AbstractAggregate implements Aggregate {
 
     UUID id = UUID.randomUUID()
     String aggregateDescription
-    int revision = 0
+    int revision
 
     List<Event> uncommittedEvents = []
 
@@ -32,7 +32,7 @@ abstract class AbstractAggregate implements Aggregate {
         event.process this
         if (newEvent) {
             //mark 'ownership' of the event the moment it's run, if new
-            event.aggregateId = this.id
+            event.aggregateId = id
             uncommittedEvents << event
         }
     }

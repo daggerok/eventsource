@@ -17,8 +17,6 @@ apply plugin: "com.jfrog.artifactory"
 
 repositories {
     jcenter()
-    maven { url 'http://clinker.netty.io/nexus/content/repositories/snapshots' }
-
 }
 
 dependencies {
@@ -77,16 +75,16 @@ task createPom  {
 }
 
 artifactory {
-    contextUrl = "${System.getenv('ARTIFACTORY_3C_URL')}"
+    contextUrl = System.getenv('ARTIFACTORY_3C_URL')
     publish {
         repository {
             repoKey = isSnapshot ? 'internal-libs-snapshot-local' : 'internal-libs-release-local'
-            username = "${System.getenv('ARTIFACTORY_3C_USERNAME')}"
-            password = "${System.getenv('ARTIFACTORY_3C_PASSWORD')}"
+            username = System.getenv('ARTIFACTORY_3C_USERNAME')
+            password = System.getenv('ARTIFACTORY_3C_PASSWORD')
             maven = true
         }
         defaults {
-            publications ('mavenJava')
+            publications 'mavenJava'
             publishBuildInfo = true
             publishArtifacts = true
         }
