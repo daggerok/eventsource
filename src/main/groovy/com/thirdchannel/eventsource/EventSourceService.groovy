@@ -19,6 +19,10 @@ class EventSourceService {
         aggregateService.get(aggregateId)
     }
 
+    List<Aggregate> getAll(List<UUID> aggregateIds) {
+        aggregateService.getAll(aggregateIds)
+    }
+
     Aggregate getOrCreate(UUID aggregateId, String description) {
         aggregateService.getOrCreate(aggregateId, description)
     }
