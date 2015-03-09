@@ -9,7 +9,9 @@ interface AggregateService {
 
     Aggregate get(UUID id)
     List<Aggregate> getAll(List<UUID> ids)
-    Aggregate getOrCreate(UUID id, String aggregateDescription)
+    Aggregate getOrCreate(UUID id, String description)
+
+    Aggregate create(String description)
 
     boolean exists(UUID aggregateId)
 
