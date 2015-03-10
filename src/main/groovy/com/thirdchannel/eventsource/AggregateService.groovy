@@ -7,12 +7,11 @@ package com.thirdchannel.eventsource
  */
 interface AggregateService {
 
-    void setEventService(EventService eventService)
-    EventService getEventService()
-
     Aggregate get(UUID id)
     List<Aggregate> getAll(List<UUID> ids)
-    Aggregate getOrCreate(UUID id, String aggregateDescription)
+    Aggregate getOrCreate(UUID id, String description)
+
+    Aggregate create(String description)
 
     boolean exists(UUID aggregateId)
 
