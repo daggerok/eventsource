@@ -45,7 +45,7 @@ class EventSourceService {
 
         if (aggregateService.save(aggregate, oldRevision, aggregate.uncommittedEvents)) {
             // finally, mark the aggregate's changes as committed to 'flush' the events and prepare for more
-            log.debug("Uncomitted Events persisted. Clearly events from aggregate")
+            log.debug("Uncommitted Events persisted. Clearing events from aggregate")
             aggregate.markEventsAsCommitted()
             true
         } else {

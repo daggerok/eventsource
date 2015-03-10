@@ -11,7 +11,7 @@ import groovy.transform.ToString
 class FooEvent extends AbstractEvent {
 
     transient String name
-    transient int count
+    transient int count = 0
 
     void restoreData(final Map data) {
         name = data.name
@@ -20,7 +20,7 @@ class FooEvent extends AbstractEvent {
 
     void process(Aggregate root) {
         Bar bar = (Bar)root
-        bar.count = count
+        bar.count += count
         bar.name = name
     }
 }

@@ -55,4 +55,8 @@ class EventSourceServiceSpec extends Specification {
             foo2.revision == 2
             foo3.revision == 3
     }
+
+    void "Loading Historical events should only be applied once" () {
+
+    }
 }

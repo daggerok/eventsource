@@ -63,7 +63,7 @@ class AbstractAggregateSpec extends Specification {
             bar.applyChange(fop)
 
         then:
-            bar.count == 2
+            bar.count == 3
             bar.name == "Whizbang"
             bar.uncommittedEvents.size() == 2
 
@@ -73,4 +73,5 @@ class AbstractAggregateSpec extends Specification {
         then:
             !bar.uncommittedEvents
     }
+
 }

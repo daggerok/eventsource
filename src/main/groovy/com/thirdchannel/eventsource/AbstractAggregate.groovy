@@ -1,39 +1,20 @@
 package com.thirdchannel.eventsource
 
 import groovy.transform.CompileStatic
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
 /**
  * @author Steve Pember
  */
+@EqualsAndHashCode
 @CompileStatic
 @ToString
-abstract class AbstractAggregate implements Aggregate {
+abstract class AbstractAggregate extends AbstractFunctionalAggregate {
 
     UUID id = UUID.randomUUID()
     String aggregateDescription
-    int revision
+    int revision = 0
 
     List<Event> uncommittedEvents = []
-
-    void markEventsAsCommitted() {
-        uncommittedEvents.clear()
-    }
-
-    void loadFromPastEvents(List<Event> events) {
-        events.each { runEvent it, false }
-    }
-
-    void applyChange(Event event) {
-        runEvent(event, true)
-    }
-
-    private void runEvent(Event event, boolean newEvent) {
-        event.process this
-        if (newEvent) {
-            //mark 'ownership' of the event the moment it's run, if new
-            event.aggregateId = id
-            uncommittedEvents << event
-        }
-    }
 }
