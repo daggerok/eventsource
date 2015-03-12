@@ -66,4 +66,11 @@ interface AggregateService {
      * @return the number of aggregates saved. Should be 1 or 0
      */
     int save(Aggregate aggregate)
+
+    /**
+     *
+     * @param aggregates
+     * @return
+     */
+    int save(List<Aggregate> aggregates)
 }

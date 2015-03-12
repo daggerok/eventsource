@@ -106,8 +106,6 @@ class EventSourceService {
     }
 
     private void serializeEventData(Event event, JsonBuilder builder) {
-
-        //rx.Observable.from(event.class.getDeclaredFields())
         rx.Observable.from(getAllFields(event.class))
             .filter({Field f -> f.isAnnotationPresent(EventData)})
             .reduce([:], {Map agg, Field f ->
@@ -192,7 +190,6 @@ class EventSourceService {
             })
             .groupBy({((Event)it).aggregateId})
             .flatMap({GroupedObservable it->
-
                 it.reduce([], {List l, item-> l += item})
                 .map({List collectedEvents->
                     return ((Aggregate)aggregateLookup[it.key.toString()]).loadFromPastEvents(collectedEvents)}
