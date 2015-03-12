@@ -20,8 +20,8 @@ repositories {
 }
 
 dependencies {
+    compile "io.reactivex:rxjava:1.0.4"
     compile "org.codehaus.groovy:groovy-all:2.3.9"
-
     compile "org.slf4j:slf4j-api:1.7.10"
 
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
@@ -32,7 +32,7 @@ targetCompatibility = 1.7
 
 // UPDATE THE VERSION!
 group = 'com.thirdchannel'
-version = '0.0.2-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 
 ext.isSnapshot = version.contains('SNAPSHOT')
 

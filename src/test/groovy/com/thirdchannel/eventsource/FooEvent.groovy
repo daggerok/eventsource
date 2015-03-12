@@ -1,5 +1,6 @@
 package com.thirdchannel.eventsource
 
+import com.thirdchannel.eventsource.annotation.EventData
 import groovy.transform.CompileStatic
 import groovy.transform.ToString
 
@@ -10,8 +11,10 @@ import groovy.transform.ToString
 @CompileStatic
 class FooEvent extends AbstractEvent {
 
-    transient String name
-    transient int count = 0
+    @EventData
+    String name
+
+    @EventData int count = 0
 
     void restoreData(final Map data) {
         name = data.name

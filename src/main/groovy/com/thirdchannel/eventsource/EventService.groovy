@@ -7,22 +7,66 @@ package com.thirdchannel.eventsource
  */
 interface EventService {
 
-    // get
-    // load all from Aggregate
-
-    // load all from Aggregate in Date Range
-    // load all since revision
-
-    // save all events
-
+    /**
+     *
+     * @param aggregate
+     * @return
+     */
     List<Event> findAllEventsForAggregate(Aggregate aggregate)
-    List<Event> findAllEventsForAggregateSinceRevision(Aggregate aggregate, int revision)
-    List<Event> findAllEventsForAggregateSinceDate(Aggregate aggregate, Date date)
+
+    /**
+     *
+     * @param aggregate
+     * @return
+     */
+    List<Event> findAllEventsForAggregates(List<Aggregate> aggregates)
+
+    /**
+     *
+     * @param aggregate
+     * @param begin
+     * @param end
+     * @return
+     */
     List<Event> findAllEventsForAggregateInRange(Aggregate aggregate, Date begin, Date end)
 
-    void loadEventsForAggregates(List<Aggregate> aggregates)
-    void loadEventsForAggregates(List<Aggregate> aggregates, Date begin, Date end)
+    /**
+     *
+     * @param aggregate
+     * @param begin
+     * @param end
+     * @return
+     */
+    List<Event> findAllEventsForAggregatesInRange(List<Aggregate> aggregate, Date begin, Date end)
 
-    boolean save(Aggregate aggregate, List<Event> events)
-    boolean save(Aggregate aggregate, Event event)
+    /**
+     *
+     * @param aggregate
+     * @param revision
+     * @return
+     */
+    List<Event> findAllEventsForAggregateSinceRevision(Aggregate aggregate, int revision)
+
+    /**
+     *
+     * @param aggregate
+     * @param date
+     * @return
+     */
+    List<Event> findAllEventsForAggregateSinceDate(Aggregate aggregate, Date date)
+
+    /**
+     *
+     * @param event
+     * @return
+     */
+    boolean save(Event event)
+
+    /**
+     *
+     * @param events
+     * @return
+     */
+    boolean save(List<Event> events)
+
 }
