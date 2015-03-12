@@ -67,7 +67,7 @@ class EventSourceServiceSpec extends Specification {
 
     void "Retrieving the current state of an Aggregate build up from the events" () {
         given:
-        Bar bar = new Bar(aggregateDescription: "Bar Root")
+        Bar bar = new Bar(aggregateDescription: "Bar Root", id: UUID.randomUUID())
         Event foo1 = new FooEvent(revision: 1, aggregateId: bar.id, userId: "1", data: "", count: 5, name: "Test")
         Event foo2 = new FooEvent(revision: 2, aggregateId: bar.id, userId: "1", data: "", count: 100, name: "Test3")
         Event foo3 = new FooEvent(revision: 3, aggregateId: bar.id, userId: "1", data: "", count: 25, name: "Test2")
@@ -84,13 +84,13 @@ class EventSourceServiceSpec extends Specification {
 
     void "Retrieving current state of multiple aggregates should build up from their respective events" () {
         given:
-        Bar bar = new Bar(aggregateDescription: "Bar Root")
+        Bar bar = new Bar(aggregateDescription: "Bar Root", id: UUID.randomUUID())
         Event foo1 = new FooEvent(revision: 1, aggregateId: bar.id, userId: "1", data: "", count: 5, name: "Test")
         Event foo2 = new FooEvent(revision: 2, aggregateId: bar.id, userId: "1", data: "", count: 100, name: "Test3")
         Event foo3 = new FooEvent(revision: 3, aggregateId: bar.id, userId: "1", data: "", count: 25, name: "Test2")
         eventSourceService.serializeEvents([foo1, foo2, foo3])
 
-        Bar bar2 = new Bar(aggregateDescription: "Second Bar root")
+        Bar bar2 = new Bar(aggregateDescription: "Second Bar root", id: UUID.randomUUID())
         Event foo4 = new FooEvent(revision: 1, aggregateId: bar2.id, userId: "1", data: "", count: 10, name: "Baz")
         Event foo5 = new FooEvent(revision: 2, aggregateId: bar2.id, userId: "1", data: "", count: 999, name: "Baz3")
         Event foo6 = new FooEvent(revision: 3, aggregateId: bar2.id, userId: "1", data: "", count: 1, name: "Baz2")

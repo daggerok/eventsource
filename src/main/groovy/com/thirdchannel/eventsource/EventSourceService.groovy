@@ -5,6 +5,7 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import rx.observables.GroupedObservable
 
 import java.lang.reflect.Field
 
@@ -15,6 +16,7 @@ import java.lang.reflect.Field
  * @author steve pember
  */
 @Slf4j
+@CompileStatic
 class EventSourceService {
 
     AggregateService aggregateService
@@ -108,7 +110,7 @@ class EventSourceService {
         //rx.Observable.from(event.class.getDeclaredFields())
         rx.Observable.from(getAllFields(event.class))
             .filter({Field f -> f.isAnnotationPresent(EventData)})
-            .reduce([:], {agg, f ->
+            .reduce([:], {Map agg, Field f ->
                 agg[f.getName()] = event.getProperties()[f.getName()]
                 agg
             })
@@ -181,17 +183,20 @@ class EventSourceService {
     private void loadHistoricalEventsForAggregates(List<Aggregate> aggregates, List<Event> events) {
 
         JsonSlurper slurper = new JsonSlurper()
-        Map<UUID, Aggregate> aggregateLookup = aggregates.collectEntries {Aggregate it ->[(it.id): it]}
-        println "Building up $aggregates from $events"
+        Map<UUID, Aggregate> aggregateLookup = aggregates.collectEntries {Aggregate it ->[(it.id.toString()): it]}
+
         rx.Observable.from(events)
             .map({Event event->
                 event.restoreData(slurper.parseText(event.data) as Map)
                 event
             })
             .groupBy({((Event)it).aggregateId})
-            .flatMap({
-                it.reduce([], {l, item-> l += item})
-                .map({List collectedEvents-> return ((Aggregate)aggregateLookup[it.key]).loadFromPastEvents(collectedEvents)})
+            .flatMap({GroupedObservable it->
+
+                it.reduce([], {List l, item-> l += item})
+                .map({List collectedEvents->
+                    return ((Aggregate)aggregateLookup[it.key.toString()]).loadFromPastEvents(collectedEvents)}
+                )
             })
             .subscribe({it}, {log.error("Unable to load events: ", it)}, {})
     }
