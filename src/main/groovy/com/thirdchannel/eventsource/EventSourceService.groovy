@@ -3,6 +3,7 @@ package com.thirdchannel.eventsource
 import com.thirdchannel.eventsource.annotation.EventData
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 
 import java.lang.reflect.Field
@@ -103,7 +104,9 @@ class EventSourceService {
     }
 
     private void serializeEventData(Event event, JsonBuilder builder) {
-        rx.Observable.from(event.class.getDeclaredFields())
+
+        //rx.Observable.from(event.class.getDeclaredFields())
+        rx.Observable.from(getAllFields(event.class))
             .filter({Field f -> f.isAnnotationPresent(EventData)})
             .reduce([:], {agg, f ->
                 agg[f.getName()] = event.getProperties()[f.getName()]
@@ -118,6 +121,14 @@ class EventSourceService {
                 {log.error("Failed", it)},
                 {}
             )
+    }
+
+    private List<Field> getAllFields(Class<?> object) {
+        List<Field> fields = []
+        for (Class<?> c = object; c != null; c = c.getSuperclass()) {
+            fields.addAll(c.getDeclaredFields());
+        }
+        fields
     }
 
     /*
