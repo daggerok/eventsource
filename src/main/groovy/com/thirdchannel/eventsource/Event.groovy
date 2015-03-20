@@ -32,6 +32,9 @@ interface Event {
     Date getDate()
     void setDate(Date date)
 
+    Date getDateEffective()
+    void setDateEffective(Date date)
+
     /**
      * The Class name of the event, for mapping data into a POJO
      *

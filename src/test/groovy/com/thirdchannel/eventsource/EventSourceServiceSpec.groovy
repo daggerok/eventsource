@@ -1,5 +1,7 @@
 package com.thirdchannel.eventsource
 
+import com.thirdchannel.eventsource.aggregates.Bar
+import com.thirdchannel.eventsource.aggregates.FooEvent
 import groovy.util.logging.Slf4j
 import spock.lang.Specification
 
@@ -34,7 +36,8 @@ class EventSourceServiceSpec extends Specification {
         when:
             Bar bar = new Bar(aggregateDescription: "Bar Root")
             Event foo1 = new FooEvent(revision: 0, aggregateId: bar.id, userId: "1", data: "", count: 5, name: "Test")
-            Event foo2 = new FooEvent(revision: 0, aggregateId: bar.id, userId: "1", data: "", count: 10000, name: "Test3")
+            Date oldDate = new Date()-5
+            Event foo2 = new FooEvent(revision: 0, aggregateId: bar.id, userId: "1", data: "", count: 10000, name: "Test3", dateEffective: oldDate)
             Event foo3 = new FooEvent(revision: 0, aggregateId: bar.id, userId: "1", data: "", count: 25, name: "Test2")
 
             bar.applyChange(foo1)
@@ -45,11 +48,13 @@ class EventSourceServiceSpec extends Specification {
             then:
             bar.revision == 0
             foo1.revision == 0
+            foo1.dateEffective == foo1.date
+            foo1.date != null
             foo1.data == ""
             foo2.revision == 0
+            foo2.dateEffective == oldDate
+            foo2.date != oldDate
             foo3.revision == 0
-
-
 
         when:
             boolean result = eventSourceService.save(bar)
@@ -61,8 +66,37 @@ class EventSourceServiceSpec extends Specification {
             foo1.data == '{"name":"Test","count":5}'
             foo2.revision == 2
             foo3.revision == 3
+    }
 
+    void "#save should return true and update revisions for multiple aggregates" () {
+        given:
+        eventSourceService.aggregateService = [save: { Aggregate a, int r -> 0 }, exists: {UUID id -> true}, update: { Aggregate a, int r -> 1 }] as AggregateService
+        eventSourceService.eventService = [save: { List<Event> e -> true }] as EventService
 
+        Bar bar = new Bar()
+        List<Event> barEvents = [new FooEvent(aggregateId: bar.id, count: 5, name: "test"),
+                                 new FooEvent(aggregateId: bar.id, count: 10, name: "test"),
+                                 new FooEvent(aggregateId: bar.id, count:7, name: "Blah")
+        ]
+        Bar b2 = new Bar()
+        List<Event> b2Events = [new FooEvent(aggregateId: b2.id, count: 100, name: "test"),
+                                 new FooEvent(aggregateId: b2.id, count: 5, name: "test"),
+                                 new FooEvent(aggregateId: b2.id, count:75, name: "Blah2")
+        ]
+
+        when:
+        barEvents.each {bar.applyChange(it)}
+        b2Events.each {b2.applyChange(it)}
+        boolean result = eventSourceService.save([bar, b2])
+
+        then:
+            result
+            bar.revision == 3
+            b2.revision == 3
+            bar.count == 22
+            bar.name == "Blah"
+            b2.count == 180
+            b2.name == "Blah2"
     }
 
     void "Retrieving the current state of an Aggregate build up from the events" () {

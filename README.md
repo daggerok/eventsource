@@ -7,6 +7,16 @@ SpringTemplate versus JOOQ).
 ## Working with Aggregates and Events
 
 
+### Aggregate
+An Aggregate represents the 'container' or root for a stream of Events. Aside from the properties defined within the interface, all implementation
+properties should be transient (e.g. not saved directly to the database along with the aggregate).
+
+### Event
+An Event represents a single atomic unit of state change for an Aggregate. It represents something successful that occurred within our system
+against an Aggregate.
+
+
+
 
 
 ## TODO:

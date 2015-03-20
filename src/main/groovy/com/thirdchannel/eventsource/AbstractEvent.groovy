@@ -19,6 +19,19 @@ abstract class AbstractEvent implements Event {
     String data
     String userId
     String clazz = getClass().name
+    private Date dateEffective
+
+    Date getDateEffective() {
+        if (!this.dateEffective) {
+            date
+        } else {
+            dateEffective
+        }
+    }
+
+    void setDateEffective(Date date) {
+        this.dateEffective = date
+    }
 
     void setRevision(int r) {
         // allow us to set the revision the first time

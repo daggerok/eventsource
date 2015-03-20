@@ -1,5 +1,8 @@
-package com.thirdchannel.eventsource
+package com.thirdchannel.eventsource.aggregates
 
+import com.thirdchannel.eventsource.AbstractEvent
+import com.thirdchannel.eventsource.Aggregate
+import com.thirdchannel.eventsource.aggregates.Bar
 import com.thirdchannel.eventsource.annotation.EventData
 import groovy.transform.CompileStatic
 import groovy.transform.ToString
