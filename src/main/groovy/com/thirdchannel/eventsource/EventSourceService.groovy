@@ -81,7 +81,7 @@ class EventSourceService {
         save([aggregate])
     }
 
-    boolean save(List<Aggregate> aggregates) {
+    boolean save(List<? extends Aggregate> aggregates) {
         // save Uncommitted events. For each uncommitted event,increment the revision on the aggregate and set the
         // revision on the event.
         // pass to the aggregateService for persisting, with the idea that it will save both the Aggregate and events
