@@ -24,18 +24,9 @@ interface AggregateService {
     /**
      *
      * @param id
-     * @param description
      * @return
      */
-    Aggregate getOrCreate(UUID id, String description)
-
-    /**
-     * Create a new Aggregate with the attached description
-     *
-     * @param description
-     * @return
-     */
-    Aggregate create(String description)
+    Aggregate getOrCreate(UUID id)
 
     /**
      *

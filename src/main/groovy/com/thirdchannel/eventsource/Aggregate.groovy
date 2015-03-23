@@ -7,9 +7,6 @@ interface Aggregate {
     UUID getId()
     void setId(UUID id)
 
-    String getAggregateDescription()
-    void setAggregateDescription(String aggregateDescription)
-
     int getRevision()
     void setRevision(int revision)
 

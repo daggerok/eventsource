@@ -11,7 +11,7 @@ class AbstractAggregateSpec extends Specification {
 
     void "Applying an event should change the aggregate and move the event into uncommitted events"() {
         when:
-            Bar bar = new Bar(aggregateDescription: "Bar Root")
+            Bar bar = new Bar()
             Event foo = new FooEvent(revision: 0, aggregateId: bar.id, userId: "1", data: "{'count':1,'name':'test'}")
 
         then:
@@ -33,7 +33,7 @@ class AbstractAggregateSpec extends Specification {
 
     void "Restoring an event from history should change the aggregate but not have the event listed as uncommitted"() {
         given:
-            Bar bar = new Bar(aggregateDescription: "Bar Root")
+            Bar bar = new Bar()
             Event foo = new FooEvent(revision:0, aggregateId: bar.id, userId: "1", data: "")
 
         when:
@@ -51,7 +51,7 @@ class AbstractAggregateSpec extends Specification {
 
         when:
             UUID custom = UUID.randomUUID()
-            Bar bar = new Bar(aggregateDescription: "Bar Root", id: custom)
+            Bar bar = new Bar( id: custom)
 
         then:
             bar.id == custom
