@@ -107,7 +107,7 @@ class EventSourceService {
         JsonBuilder builder = new JsonBuilder()
         for(Event event: events) {
             serializeEventData(event, builder)
-            log.info("Event data is now {}", event.data)
+            log.debug("Event data is now {}", event.data)
         }
 
 
