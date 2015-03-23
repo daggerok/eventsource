@@ -52,32 +52,6 @@ class EventSourceService {
      *
      */
     boolean save(Aggregate aggregate) {
-        // save Uncommitted events. For each uncommitted event,increment the revision on the aggregate and set the
-        // revision on the event.
-        // pass to the aggregateService for persisting, with the idea that it will save both the Aggregate and events
-        // within a Transaction, if possible
-
-        // only proceed if we receive a 1 from the saveAggregate function. A zero implies that the save could not occur,
-        // likely due to the aggregate being out of version. Anything more than a 1 implies disaster: more than 1 aggregate with that id!
-//        int rowsAffected = saveAggregate(aggregate)
-//        if (1 == rowsAffected) {
-//            // finally, mark the aggregate's changes as committed to 'flush' the events and prepare for more
-//            // this be a function accepts a list of aggregates
-//
-//            //instead, let's collect all of the uncommitted events, then later, batch insert them separately
-//            serializeEvents(aggregate.uncommittedEvents)
-//            if (eventService.save(aggregate.uncommittedEvents)) {
-//                log.debug("Uncommitted Events persisted. Clearing events from aggregate")
-//                aggregate.markEventsAsCommitted()
-//                true
-//            } else {
-//                log.error("EventService reporting that events failed to save.")
-//                false
-//            }
-//        } else {
-//            log.error("Error updating or saving aggregate. Received a row count updated of {} when it should be 1", rowsAffected)
-//            false
-//        }
         save([aggregate])
     }
 
@@ -91,7 +65,6 @@ class EventSourceService {
         boolean result = false
 
         rx.Observable.from(aggregates)
-        //.doOnEach({aggregate -> eventCount += ((Aggregate)aggregate).uncommittedEvents})
         // this next does io!
         .filter({1 == saveAggregate(it)})
         // at this point we should only those aggregates which were successful
@@ -133,7 +106,7 @@ class EventSourceService {
      *
      * @param events
      */
-    protected void serializeEvents(List<Event> events) {
+    protected void serializeEvents(List<? extends Event> events) {
         JsonBuilder builder = new JsonBuilder()
         for(Event event: events) {
             serializeEventData(event, builder)

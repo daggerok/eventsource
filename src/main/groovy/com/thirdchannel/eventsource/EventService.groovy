@@ -19,7 +19,7 @@ interface EventService {
      * @param aggregate
      * @return
      */
-    List<Event> findAllEventsForAggregates(List<Aggregate> aggregates)
+    List<Event> findAllEventsForAggregates(List<? extends Aggregate> aggregates)
 
     /**
      *
@@ -37,7 +37,7 @@ interface EventService {
      * @param end
      * @return
      */
-    List<Event> findAllEventsForAggregatesInRange(List<Aggregate> aggregate, Date begin, Date end)
+    List<Event> findAllEventsForAggregatesInRange(List<? extends Aggregate> aggregate, Date begin, Date end)
 
     /**
      *
@@ -67,6 +67,6 @@ interface EventService {
      * @param events
      * @return
      */
-    boolean save(List<Event> events)
+    boolean save(List<? extends Event> events)
 
 }
