@@ -32,7 +32,7 @@ targetCompatibility = 1.7
 
 // UPDATE THE VERSION!
 group = 'com.thirdchannel'
-version = '0.0.4-SNAPSHOT'
+version = '0.0.4'
 
 ext.isSnapshot = version.contains('SNAPSHOT')
 
@@ -75,8 +75,10 @@ task createPom  {
 }
 
 artifactory {
+    // Information around our internal artifactory. Currently we're only publishing locally as we develop this.
     contextUrl = System.getenv('ARTIFACTORY_3C_URL')
     publish {
+
         repository {
             repoKey = isSnapshot ? 'internal-libs-snapshot-local' : 'internal-libs-release-local'
             username = System.getenv('ARTIFACTORY_3C_USERNAME')
