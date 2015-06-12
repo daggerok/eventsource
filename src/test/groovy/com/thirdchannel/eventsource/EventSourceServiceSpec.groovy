@@ -11,7 +11,7 @@ import spock.lang.Specification
 @Slf4j
 class EventSourceServiceSpec extends Specification {
 
-    private EventSourceService eventSourceService = new EventSourceService()
+    private EventSourceService eventSourceService = new EventSourceService<Bar>()
 
     void "#save should return false if the underlying aggregateService fails"() {
         given:

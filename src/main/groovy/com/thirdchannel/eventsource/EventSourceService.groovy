@@ -17,7 +17,7 @@ import java.lang.reflect.Field
  */
 @Slf4j
 @CompileStatic
-class EventSourceService {
+class EventSourceService<A extends Aggregate> {
 
     AggregateService aggregateService
 
@@ -30,7 +30,7 @@ class EventSourceService {
         aggregateService.get(aggregateId)
     }
 
-    List<Aggregate> getAll(List<UUID> aggregateIds) {
+    List<A> getAll(List<UUID> aggregateIds) {
         aggregateService.getAll(aggregateIds)
     }
 
@@ -48,11 +48,11 @@ class EventSourceService {
      * Should be wrapped in a Transactional block if available!
      *
      */
-    boolean save(Aggregate aggregate) {
+    boolean save(A aggregate) {
         save([aggregate])
     }
 
-    boolean save(List<? extends Aggregate> aggregates) {
+    boolean save(List<A> aggregates) {
         // save Uncommitted events. For each uncommitted event,increment the revision on the aggregate and set the
         // revision on the event.
         // pass to the aggregateService for persisting, with the idea that it will save both the Aggregate and events
@@ -63,10 +63,10 @@ class EventSourceService {
 
         rx.Observable.from(aggregates)
         // this next does io!
-        .filter({1 == saveAggregate(it)})
+        .filter({A aggregate -> 1 == saveAggregate(aggregate)})
         // at this point we should only those aggregates which were successful
-        .map({ aggregate->
-            serializeEvents(((Aggregate)aggregate).uncommittedEvents)
+        .map({A aggregate->
+            serializeEvents(aggregate.uncommittedEvents)
             aggregate
         })
         .reduce([], {acc, agg ->
@@ -74,9 +74,11 @@ class EventSourceService {
             acc
         })
         .subscribe({aList->
-            if (eventService.save(((List<Aggregate>)aList)*.uncommittedEvents.flatten() as List<Event>)) {
-                log.debug("Uncommitted Events persisted. Clearing events from {} / {} aggregates", aggregateCount, ((List<Aggregate>)aList).size())
-                ((List<Aggregate>)aList)*.markEventsAsCommitted()
+            if (eventService.save(((List<A>)aList)*.uncommittedEvents.flatten() as List<Event>)) {
+                log.debug("Uncommitted Events persisted. Clearing events from {} / {} aggregates", aggregateCount, ((List<A>)aList).size())
+                ((List<A>)aList).each {A aggregate->
+                    aggregate.markEventsAsCommitted()
+                }
                 result = true
             } else {
                 log.error("EventService reporting that events failed to save.")
@@ -91,7 +93,7 @@ class EventSourceService {
      * @param expectedRevision
      * @return
      */
-    protected int saveAggregate(Aggregate aggregate) {
+    protected int saveAggregate(A aggregate) {
         int oldRevision = aggregate.revision
         // courtesy of burt:
         // update the aggregate revision and set the event equal to that new revision
@@ -144,30 +146,30 @@ class EventSourceService {
         EventSourceService
      */
 
-    void loadCurrentState(Aggregate aggregate) {
+    void loadCurrentState(A aggregate) {
         // todo: add snapshot behavior
 
         loadHistoricalEventsForAggregates([aggregate], eventService.findAllEventsForAggregate(aggregate))
 
     }
 
-    void loadCurrentState(List<Aggregate> aggregates) {
+    void loadCurrentState(List<A> aggregates) {
         loadHistoricalEventsForAggregates(aggregates, eventService.findAllEventsForAggregates(aggregates))
     }
 
-    void loadHistoryUpTo(Aggregate aggregate, int targetRevision) {
+    void loadHistoryUpTo(A aggregate, int targetRevision) {
         aggregate.loadFromPastEvents(eventService.findAllEventsForAggregateSinceRevision(aggregate, targetRevision))
     }
 
-    void loadHistoryUpTo(Aggregate aggregate, Date targetDate) {
+    void loadHistoryUpTo(A aggregate, Date targetDate) {
         //aggregate.loadFromPastEvents(eventService.findAllEvents(aggregate, targetRevision))
     }
 
-    void loadHistoryInRange(Aggregate aggregate, Date begin, Date end) {
+    void loadHistoryInRange(A aggregate, Date begin, Date end) {
         loadHistoricalEventsForAggregates([aggregate], eventService.findAllEventsForAggregateInRange(aggregate, begin, end))
     }
 
-    void loadHistoryInRange(List<Aggregate> aggregates, Date begin, Date end) {
+    void loadHistoryInRange(List<A> aggregates, Date begin, Date end) {
         List<Event> events = eventService.findAllEventsForAggregatesInRange(aggregates, begin, end)
         loadHistoricalEventsForAggregates(aggregates, events)
     }
@@ -186,10 +188,10 @@ class EventSourceService {
 
     // method for hydrating events for a single aggregate or multiple
 
-    private void loadHistoricalEventsForAggregates(List<Aggregate> aggregates, List<Event> events) {
+    private void loadHistoricalEventsForAggregates(List<A> aggregates, List<Event> events) {
 
         JsonSlurper slurper = new JsonSlurper()
-        Map<UUID, Aggregate> aggregateLookup = aggregates.collectEntries {Aggregate it ->[(it.id.toString()): it]}
+        Map<UUID, A> aggregateLookup = aggregates.collectEntries {A it ->[(it.id.toString()): it]}
 
         rx.Observable.from(events)
             .map({Event event->
@@ -200,7 +202,7 @@ class EventSourceService {
             .flatMap({GroupedObservable it->
                 it.reduce([], {List l, item-> l += item})
                 .map({List collectedEvents->
-                    return ((Aggregate)aggregateLookup[it.key.toString()]).loadFromPastEvents(collectedEvents)}
+                    return ((A)aggregateLookup[it.key.toString()]).loadFromPastEvents(collectedEvents)}
                 )
             })
             .subscribe({it}, {log.error("Unable to load events: ", it)}, {})
