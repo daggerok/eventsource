@@ -12,21 +12,22 @@ import groovy.transform.ToString
  */
 @ToString
 @CompileStatic
-class FooEvent extends AbstractEvent {
+class FooEvent extends AbstractEvent<Bar> {
 
     @EventData
     String name
 
-    @EventData int count = 0
+    @EventData
+    int count = 0
 
     void restoreData(final Map data) {
         name = data.name
         count = (int)data.count
     }
 
-    void process(Aggregate root) {
-        Bar bar = (Bar)root
-        bar.count += count
-        bar.name = name
+    @Override
+    void process(Bar aggregate) {
+        aggregate.count += count
+        aggregate.name = name
     }
 }

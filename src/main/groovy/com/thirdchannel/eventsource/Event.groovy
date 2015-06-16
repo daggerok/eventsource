@@ -18,7 +18,7 @@ import groovy.transform.CompileStatic
  * @author steve pember
  */
 @CompileStatic
-interface Event {
+interface Event<A extends Aggregate> {
 
     UUID getId()
     void setId(UUID id)
@@ -72,5 +72,5 @@ interface Event {
     /**
      * Apply this event to the aggregate. Should apply event data into the aggregate
      */
-    void process(Aggregate root)
+    void process(A aggregate)
 }

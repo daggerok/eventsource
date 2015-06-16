@@ -31,6 +31,11 @@ abstract class AbstractFunctionalAggregate implements Aggregate {
             //mark 'ownership' of the event the moment it's run, if new
             event.aggregateId = id
             uncommittedEvents << event
+        } else {
+            // by setting the revision on loading of historical events, we get two things:
+            // 1. the aggregate revision matches its revision at that point in time (saving outside of current state should still fail)
+            // 2. We can reduce the number of queries we make by not having to fetch the base aggregate to begin with (without this line, the revision would be 0 on the aggregate)
+            revision = event.revision
         }
     }
 }

@@ -5,28 +5,28 @@ package com.thirdchannel.eventsource
  *
  * @author steve
  */
-interface AggregateService {
+interface AggregateService<T extends Aggregate> {
 
     /**
      *
      * @param id
      * @return
      */
-    Aggregate get(UUID id)
+    T get(UUID id)
 
     /**
      *
      * @param ids
      * @return
      */
-    List<Aggregate> getAll(List<UUID> ids)
+    List<T> getAll(List<UUID> ids)
 
     /**
      *
      * @param id
      * @return
      */
-    Aggregate getOrCreate(UUID id)
+    T getOrCreate(UUID id)
 
     /**
      *
@@ -49,19 +49,19 @@ interface AggregateService {
      * @return the number of rows updated. Should really be 1. 0 implies that your aggregate is out of version, and anything larger than 1 is a disaster
      * @see Aggregate
      */
-    int update(Aggregate aggregate, int expectedRevision)
+    int update(T aggregate, int expectedRevision)
 
     /**
      * Saves a new aggregate.
      * @param aggregate The {@link Aggregate} to save
      * @return the number of aggregates saved. Should be 1 or 0
      */
-    int save(Aggregate aggregate)
+    int save(T aggregate)
 
     /**
      *
      * @param aggregates
      * @return
      */
-    int save(List<Aggregate> aggregates)
+    int save(List<T> aggregates)
 }

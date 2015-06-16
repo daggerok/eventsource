@@ -20,5 +20,6 @@ against an Aggregate.
 
 
 ## TODO:
-* add feature to block loading of historical events more than once. Perhaps a transient 'trackingRevision' or resetting revision to 0 in memory when the aggregate is loaded?
+* Implement Snapshot
+* Add ability to set JSON serializer / deserializer (currently uses Groovy's JSON slurper and builder)
 * cleanup apis on service to force more through EventSourceService

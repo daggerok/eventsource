@@ -10,7 +10,7 @@ import groovy.transform.ToString
 @EqualsAndHashCode
 @ToString
 @CompileStatic
-abstract class AbstractEvent implements Event {
+abstract class AbstractEvent<A extends Aggregate> implements Event<A> {
 
     UUID id = UUID.randomUUID()
     int revision
