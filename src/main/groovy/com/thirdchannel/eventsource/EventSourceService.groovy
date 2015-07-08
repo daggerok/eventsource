@@ -26,7 +26,7 @@ class EventSourceService<A extends Aggregate> {
     SnapshotService snapshotService
 
     // find or create aggregate
-    Aggregate get(UUID aggregateId) {
+    A get(UUID aggregateId) {
         aggregateService.get(aggregateId)
     }
 
@@ -34,7 +34,7 @@ class EventSourceService<A extends Aggregate> {
         aggregateService.getAll(aggregateIds)
     }
 
-    Aggregate getOrCreate(UUID aggregateId) {
+    A getOrCreate(UUID aggregateId) {
         aggregateService.getOrCreate(aggregateId)
     }
 
