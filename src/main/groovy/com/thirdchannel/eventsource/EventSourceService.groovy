@@ -30,8 +30,21 @@ class EventSourceService<A extends Aggregate> {
         aggregateService.get(aggregateId)
     }
 
+    A getCurrent(UUID aggregateId) {
+        A aggregate = get(aggregateId)
+        loadCurrentState(aggregate)
+        aggregate
+    }
+
+
     List<A> getAll(List<UUID> aggregateIds) {
         aggregateService.getAll(aggregateIds)
+    }
+
+    List<A> getAllCurrent(List<UUID> aggregateIds) {
+        List<A> aggregates = getAll(aggregateIds)
+        loadCurrentState(aggregates)
+        aggregates
     }
 
     A getOrCreate(UUID aggregateId) {
