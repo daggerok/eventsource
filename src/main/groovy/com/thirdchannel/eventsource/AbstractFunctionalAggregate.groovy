@@ -13,16 +13,24 @@ import groovy.transform.CompileStatic
 @CompileStatic
 abstract class AbstractFunctionalAggregate implements Aggregate {
 
+    @Override
     void markEventsAsCommitted() {
         uncommittedEvents.clear()
     }
 
-    void loadFromPastEvents(List<Event> events) {
+    @Override
+    void loadFromPastEvents(List<? extends Event> events) {
         events.each { runEvent it, false }
     }
 
+    @Override
     void applyChange(Event event) {
         runEvent(event, true)
+    }
+
+    @Override
+    void applyChanges(List<? extends Event> events) {
+       events.each {Event event-> applyChange(event)}
     }
 
     private void runEvent(Event event, boolean newEvent) {

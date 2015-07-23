@@ -15,5 +15,5 @@ abstract class AbstractAggregate extends AbstractFunctionalAggregate {
     UUID id = UUID.randomUUID()
     int revision = 0
 
-    List<Event> uncommittedEvents = []
+    List<? extends Event> uncommittedEvents = []
 }
