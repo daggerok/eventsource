@@ -171,11 +171,11 @@ class EventSourceService<A extends Aggregate> {
     }
 
     void loadHistoryUpTo(A aggregate, int targetRevision) {
-        aggregate.loadFromPastEvents(eventService.findAllEventsForAggregateSinceRevision(aggregate, targetRevision))
+        loadHistoricalEventsForAggregates([aggregate], eventService.findAllEventsForAggregateUpToRevision(aggregate, targetRevision))
     }
 
     void loadHistoryUpTo(A aggregate, Date targetDate) {
-        //aggregate.loadFromPastEvents(eventService.findAllEvents(aggregate, targetRevision))
+        loadHistoricalEventsForAggregates([aggregate], eventService.findAllEventsForAggregateUpToDateEffective(aggregate, targetDate))
     }
 
     void loadHistoryInRange(A aggregate, Date begin, Date end) {

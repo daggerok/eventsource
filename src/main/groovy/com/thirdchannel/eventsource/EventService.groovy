@@ -45,7 +45,7 @@ interface EventService {
      * @param revision
      * @return
      */
-    List<Event> findAllEventsForAggregateSinceRevision(Aggregate aggregate, int revision)
+    List<Event> findAllEventsForAggregateUpToRevision(Aggregate aggregate, int revision)
 
     /**
      *
@@ -53,7 +53,7 @@ interface EventService {
      * @param date
      * @return
      */
-    List<Event> findAllEventsForAggregateSinceDate(Aggregate aggregate, Date date)
+    List<Event> findAllEventsForAggregateUpToDateEffective(Aggregate aggregate, Date date)
 
     /**
      *
