@@ -1,13 +1,17 @@
 package com.thirdchannel.eventsource
 
 import com.thirdchannel.eventsource.annotation.EventData
+import com.thirdchannel.eventsource.serialize.EventSerializer
+import com.thirdchannel.eventsource.serialize.JsonBuilderEventSerializer
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import rx.functions.Func1
 import rx.observables.GroupedObservable
 
 import java.lang.reflect.Field
+import java.util.function.Function
 
 /**
  * EventSourceService is the main entry point through which all interactions with EventSourcing should occur.
@@ -24,6 +28,17 @@ class EventSourceService<A extends Aggregate> {
     EventService eventService
 
     SnapshotService snapshotService
+
+    private EventSerializer eventSerializer = new JsonBuilderEventSerializer()
+
+    /**
+     * Use to Override the default Event Serialization
+     *
+     * @param es
+     */
+    void setEventSerializer(EventSerializer es) {
+        eventSerializer = es
+    }
 
     // find or create aggregate
     A get(UUID aggregateId) {
@@ -110,7 +125,7 @@ class EventSourceService<A extends Aggregate> {
         int oldRevision = aggregate.revision
         // courtesy of burt:
         // update the aggregate revision and set the event equal to that new revision
-        aggregate.uncommittedEvents.each { it.revision = ++aggregate.revision }
+        aggregate.uncommittedEvents.each { event-> event.revision = ++aggregate.revision }
         aggregateService.exists(aggregate.id) ? aggregateService.update(aggregate, oldRevision) : aggregateService.save(aggregate)
     }
 
@@ -119,39 +134,9 @@ class EventSourceService<A extends Aggregate> {
      * @param events
      */
     protected void serializeEvents(List<? extends Event> events) {
-        JsonBuilder builder = new JsonBuilder()
-        for(Event event: events) {
-            serializeEventData(event, builder)
-            log.debug("Event data is now {}", event.data)
+        events.each {Event event->
+            event.data = eventSerializer.serialize(event)
         }
-
-
-    }
-
-    private void serializeEventData(Event event, JsonBuilder builder) {
-        rx.Observable.from(getAllFields(event.class))
-            .filter({Field f -> f.isAnnotationPresent(EventData)})
-            .reduce([:], {Map agg, Field f ->
-                agg[f.getName()] = event.getProperties()[f.getName()]
-                agg
-            })
-            .map({
-                builder(it)
-                builder.toString()
-            })
-            .subscribe(
-                {event.data = it},
-                {log.error("Failed", it)},
-                {}
-            )
-    }
-
-    private List<Field> getAllFields(Class<?> object) {
-        List<Field> fields = []
-        for (Class<?> c = object; c != null; c = c.getSuperclass()) {
-            fields.addAll(c.getDeclaredFields());
-        }
-        fields
     }
 
     /*
@@ -161,7 +146,6 @@ class EventSourceService<A extends Aggregate> {
 
     void loadCurrentState(A aggregate) {
         // todo: add snapshot behavior
-
         loadHistoricalEventsForAggregates([aggregate], eventService.findAllEventsForAggregate(aggregate))
 
     }
@@ -203,12 +187,12 @@ class EventSourceService<A extends Aggregate> {
 
     private void loadHistoricalEventsForAggregates(List<A> aggregates, List<Event> events) {
 
-        JsonSlurper slurper = new JsonSlurper()
         Map<UUID, A> aggregateLookup = aggregates.collectEntries {A it ->[(it.id.toString()): it]}
 
         rx.Observable.from(events)
             .map({Event event->
-                event.restoreData(slurper.parseText(event.data) as Map)
+            println("Hydrated ${eventSerializer.hydrate(event.data)}")
+                event.restoreData(eventSerializer.hydrate(event.data))
                 event
             })
             .groupBy({((Event)it).aggregateId})
@@ -220,4 +204,5 @@ class EventSourceService<A extends Aggregate> {
             })
             .subscribe({it}, {log.error("Unable to load events: ", it)}, {})
     }
+
 }
