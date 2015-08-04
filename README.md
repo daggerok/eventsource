@@ -36,8 +36,11 @@ The basic design structure is as follows:
 * The EventSourceService utilizes the Aggregate and Event Services and performs the basic ES operations: processing new events, loading an Aggregate to any point in time (most often will be 'Current'), handling Event Serialization and De-Serialization.
 
 _Note:_ I'm not super pleased with the current design and naming; it's subject to change. The goal was to 'hide' the AggregateService and EventService behind a parent Object / API layer, but in practice users tend to want to build queries into the AggregateService directly and access that directly, circumventing the ESService.
-One particular approach
 
+## Current Serialization Mechanism
+An Event Class should mark any data that should be persisted as part of the event with the @EventData annotation. The default mechanism will take those properties and serialize them to JSON using Groovy's JsonBuilder. When pulling events from the database, it will use Groovy's JsonSlurper. This logic is contained within JsonBuilderEventSerializer.
+
+This behavior can be overwritten by implementing your own EventSerializer and calling setEventSerializer on an instance of EventSourceService.
 
 
 
