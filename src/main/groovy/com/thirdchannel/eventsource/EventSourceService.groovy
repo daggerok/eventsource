@@ -27,9 +27,9 @@ class EventSourceService<A extends Aggregate> {
 
     EventService eventService
 
-    SnapshotService snapshotService
+    //todo: SnapshotService snapshotService
 
-    private EventSerializer eventSerializer = new JsonBuilderEventSerializer()
+    protected EventSerializer eventSerializer = new JsonBuilderEventSerializer()
 
     /**
      * Use to Override the default Event Serialization
@@ -67,9 +67,6 @@ class EventSourceService<A extends Aggregate> {
     }
 
 
-//    Aggregate findOrCreateById(UUID aggregateId) {
-//
-//    }
     /**
      * Saves an aggregate and its uncommitted events. Applies revision updates to the
      *
@@ -97,21 +94,22 @@ class EventSourceService<A extends Aggregate> {
             serializeEvents(aggregate.uncommittedEvents)
             aggregate
         })
-        .reduce([], {acc, agg ->
-            ((List)acc).add(agg)
-            acc
-        })
-        .subscribe({aList->
-            if (eventService.save(((List<A>)aList)*.uncommittedEvents.flatten() as List<Event>)) {
-                log.debug("Uncommitted Events persisted. Clearing events from {} / {} aggregates", aggregateCount, ((List<A>)aList).size())
-                ((List<A>)aList).each {A aggregate->
-                    aggregate.markEventsAsCommitted()
-                }
-                result = true
-            } else {
-                log.error("EventService reporting that events failed to save.")
+        .map({A aggregate->
+            rx.Observable.from(aggregate.uncommittedEvents)
+        } as Func1)
+        .flatMap({it})
+        .buffer(500)
+        .subscribe({List<? extends Event> events->
+            eventService.save(events)
+        }, {
+            log.error("Could not save: ", it )
+        }, {
+            ((List<A>)aggregates).each {A aggregate->
+                aggregate.markEventsAsCommitted()
             }
-        }, {log.error("Could not save: ", it)}, {})
+            result = true
+            }
+        )
         result
     }
 
@@ -126,7 +124,11 @@ class EventSourceService<A extends Aggregate> {
         // courtesy of burt:
         // update the aggregate revision and set the event equal to that new revision
         aggregate.uncommittedEvents.each { event-> event.revision = ++aggregate.revision }
-        aggregateService.exists(aggregate.id) ? aggregateService.update(aggregate, oldRevision) : aggregateService.save(aggregate)
+        if (oldRevision == 0) {
+            return aggregateService.save(aggregate)
+        } else {
+            return aggregateService.update(aggregate, oldRevision)
+        }
     }
 
     /**
@@ -191,7 +193,6 @@ class EventSourceService<A extends Aggregate> {
 
         rx.Observable.from(events)
             .map({Event event->
-            println("Hydrated ${eventSerializer.hydrate(event.data)}")
                 event.restoreData(eventSerializer.hydrate(event.data))
                 event
             })

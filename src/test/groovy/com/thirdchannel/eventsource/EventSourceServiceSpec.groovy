@@ -30,7 +30,7 @@ class EventSourceServiceSpec extends Specification {
 
     void "#save should return true and update revisions upon a good persist"() {
         given:
-            eventSourceService.aggregateService = [save: { Aggregate a, int r -> 0 }, exists: {UUID id -> true}, update: { Aggregate a, int r -> 1 }] as AggregateService
+            eventSourceService.aggregateService = [save: { Aggregate a -> 1 }, exists: {UUID id -> true}, update: { Aggregate a, int r -> 1 }] as AggregateService
             eventSourceService.eventService = [save: { List<Event> e -> true }] as EventService
 
         when:
@@ -70,7 +70,7 @@ class EventSourceServiceSpec extends Specification {
 
     void "#save should return true and update revisions for multiple aggregates" () {
         given:
-            eventSourceService.aggregateService = [save: { Aggregate a, int r -> 0 }, exists: {UUID id -> true}, update: { Aggregate a, int r -> 1 }] as AggregateService
+            eventSourceService.aggregateService = [save: { Aggregate a -> 1 }, exists: {UUID id -> true}, update: { Aggregate a, int r -> 1 }] as AggregateService
             eventSourceService.eventService = [save: { List<Event> e -> true }] as EventService
 
             Bar bar = new Bar()
