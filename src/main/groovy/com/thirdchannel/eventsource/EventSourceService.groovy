@@ -104,8 +104,8 @@ class EventSourceService<A extends Aggregate> {
         }, {
             log.error("Could not save: ", it )
         }, {
-            ((List<A>)aggregates).each {A aggregate->
-                aggregate.markEventsAsCommitted()
+            aggregates.each {
+                ((A)it).markEventsAsCommitted()
             }
             result = true
             }
