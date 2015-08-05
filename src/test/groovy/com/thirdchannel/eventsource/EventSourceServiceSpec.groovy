@@ -1,7 +1,9 @@
 package com.thirdchannel.eventsource
 
 import com.thirdchannel.eventsource.aggregates.Bar
-import com.thirdchannel.eventsource.aggregates.FooEvent
+import com.thirdchannel.eventsource.events.FooEvent
+import com.thirdchannel.eventsource.mock.BarAggregateService
+import com.thirdchannel.eventsource.mock.MockEventService
 import groovy.util.logging.Slf4j
 import spock.lang.Specification
 
@@ -11,27 +13,15 @@ import spock.lang.Specification
 @Slf4j
 class EventSourceServiceSpec extends Specification {
 
-    private EventSourceService eventSourceService = new EventSourceService<Bar>()
+    private EventSourceService eventSourceService
 
-    void "#save should return false if the underlying aggregateService fails"() {
-        given:
-            eventSourceService.aggregateService = [save: { Aggregate a, int r -> 0 }, exists: {UUID id -> true}, update: { Aggregate a, int r -> 0 }] as AggregateService
-
-            Bar bar = new Bar()
-            Event foo = new FooEvent(revision: 0, aggregateId: bar.id, userId: "1", data: "", count: 1, name: "Test")
-            bar.applyChange(foo)
-
-        when:
-            boolean result = eventSourceService.save(bar)
-
-        then:
-            !result
+    def setup() {
+        eventSourceService = new EventSourceService<Bar>()
+        eventSourceService.aggregateService = new BarAggregateService()
+        eventSourceService.eventService = new MockEventService()
     }
 
     void "#save should return true and update revisions upon a good persist"() {
-        given:
-            eventSourceService.aggregateService = [save: { Aggregate a -> 1 }, exists: {UUID id -> true}, update: { Aggregate a, int r -> 1 }] as AggregateService
-            eventSourceService.eventService = [save: { List<Event> e -> true }] as EventService
 
         when:
             Bar bar = new Bar()
@@ -70,9 +60,6 @@ class EventSourceServiceSpec extends Specification {
 
     void "#save should return true and update revisions for multiple aggregates" () {
         given:
-            eventSourceService.aggregateService = [save: { Aggregate a -> 1 }, exists: {UUID id -> true}, update: { Aggregate a, int r -> 1 }] as AggregateService
-            eventSourceService.eventService = [save: { List<Event> e -> true }] as EventService
-
             Bar bar = new Bar()
             List<Event> barEvents = [new FooEvent(aggregateId: bar.id, count: 5, name: "test"),
                                      new FooEvent(aggregateId: bar.id, count: 10, name: "test"),
@@ -102,43 +89,49 @@ class EventSourceServiceSpec extends Specification {
     void "Retrieving the current state of an Aggregate build up from the events" () {
         given:
             Bar bar = new Bar(id: UUID.randomUUID())
-            Event foo1 = new FooEvent(revision: 1, aggregateId: bar.id, userId: "1", data: "", count: 5, name: "Test")
-            Event foo2 = new FooEvent(revision: 2, aggregateId: bar.id, userId: "1", data: "", count: 100, name: "Test3")
-            Event foo3 = new FooEvent(revision: 3, aggregateId: bar.id, userId: "1", data: "", count: 25, name: "Test2")
-            eventSourceService.serializeEvents([foo1, foo2, foo3])
-            eventSourceService.eventService = [findAllEventsForAggregate: { [foo1,foo2,foo3] }] as EventService
+
+            Event foo1 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 5, name: "Test")
+            Event foo2 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 100, name: "Test3")
+            Event foo3 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 25, name: "Test2")
+            bar.applyChanges([foo1, foo2, foo3])
+            eventSourceService.save(bar)
 
         when:
-            eventSourceService.loadCurrentState(bar)
+            Bar check = (Bar)eventSourceService.get(bar.id)
+            eventSourceService.loadCurrentState(check)
 
         then:
-            bar.count == 130
-            bar.name == "Test2"
+            check.count == 130
+            check.name == "Test2"
     }
 
     void "Retrieving current state of multiple aggregates should build up from their respective events" () {
         given:
             Bar bar = new Bar(id: UUID.randomUUID())
-            Event foo1 = new FooEvent(revision: 1, aggregateId: bar.id, userId: "1", data: "", count: 5, name: "Test")
-            Event foo2 = new FooEvent(revision: 2, aggregateId: bar.id, userId: "1", data: "", count: 100, name: "Test3")
-            Event foo3 = new FooEvent(revision: 3, aggregateId: bar.id, userId: "1", data: "", count: 25, name: "Test2")
-            eventSourceService.serializeEvents([foo1, foo2, foo3])
+            Event foo1 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 5, name: "Test")
+            Event foo2 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 100, name: "Test3")
+            Event foo3 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 25, name: "Test2")
+            bar.applyChanges([foo1, foo2, foo3])
+            eventSourceService.save(bar)
 
             Bar bar2 = new Bar(id: UUID.randomUUID())
-            Event foo4 = new FooEvent(revision: 1, aggregateId: bar2.id, userId: "1", data: "", count: 10, name: "Baz")
-            Event foo5 = new FooEvent(revision: 2, aggregateId: bar2.id, userId: "1", data: "", count: 999, name: "Baz3")
-            Event foo6 = new FooEvent(revision: 3, aggregateId: bar2.id, userId: "1", data: "", count: 1, name: "Baz2")
-            eventSourceService.serializeEvents([foo4, foo5, foo6])
+            Event foo4 = new FooEvent(aggregateId: bar2.id, userId: "1", data: "", count: 10, name: "Baz")
+            Event foo5 = new FooEvent(aggregateId: bar2.id, userId: "1", data: "", count: 999, name: "Baz3")
+            Event foo6 = new FooEvent(aggregateId: bar2.id, userId: "1", data: "", count: 1, name: "Baz2")
+            bar2.applyChanges([foo4, foo5, foo6])
+            eventSourceService.save(bar2)
 
-            eventSourceService.eventService = [findAllEventsForAggregates: { [foo1,foo4, foo2,foo5, foo3, foo6] }] as EventService
+
 
         when:
-            eventSourceService.loadCurrentState([bar, bar2])
+            Bar check = (Bar)eventSourceService.get(bar.id)
+            Bar check2 = (Bar)eventSourceService.get(bar2.id)
+            eventSourceService.loadCurrentState([check, check2])
         then:
-            bar.count == 130
-            bar.name == "Test2"
-            bar2.count == 1010
-            bar2.name == "Baz2"
+            check.count == 130
+            check.name == "Test2"
+            check2.count == 1010
+            check2.name == "Baz2"
 
     }
 }

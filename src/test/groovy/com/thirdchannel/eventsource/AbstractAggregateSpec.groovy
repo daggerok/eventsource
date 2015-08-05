@@ -1,7 +1,7 @@
 package com.thirdchannel.eventsource
 
 import com.thirdchannel.eventsource.aggregates.Bar
-import com.thirdchannel.eventsource.aggregates.FooEvent
+import com.thirdchannel.eventsource.events.FooEvent
 import spock.lang.Specification
 
 /**

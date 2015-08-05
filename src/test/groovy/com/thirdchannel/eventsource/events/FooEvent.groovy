@@ -1,4 +1,4 @@
-package com.thirdchannel.eventsource.aggregates
+package com.thirdchannel.eventsource.events
 
 import com.thirdchannel.eventsource.AbstractEvent
 import com.thirdchannel.eventsource.Aggregate
