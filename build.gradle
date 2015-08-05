@@ -35,7 +35,7 @@ targetCompatibility = 1.7
 
 // UPDATE THE VERSION!
 group = 'com.thirdchannel'
-version = '0.1.2-SNAPSHOT'
+version = '0.1.2'
 
 ext.isSnapshot = version.contains('SNAPSHOT')
 

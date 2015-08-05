@@ -15,6 +15,10 @@ class EventSourceServiceSpec extends Specification {
 
     private EventSourceService eventSourceService
 
+    private createFooEvent(int count, String name, Date dateEffective=null) {
+        new FooEvent(count: count, name: name, userId: "test@test.com", data:"", dateEffective: dateEffective)
+    }
+
     def setup() {
         eventSourceService = new EventSourceService<Bar>()
         eventSourceService.aggregateService = new BarAggregateService()
@@ -25,10 +29,10 @@ class EventSourceServiceSpec extends Specification {
 
         when:
             Bar bar = new Bar()
-            Event foo1 = new FooEvent(revision: 0, aggregateId: bar.id, userId: "1", data: "", count: 5, name: "Test")
+            Event foo1 = createFooEvent(5, "Test")
             Date oldDate = new Date()-5
-            Event foo2 = new FooEvent(revision: 0, aggregateId: bar.id, userId: "1", data: "", count: 10000, name: "Test3", dateEffective: oldDate)
-            Event foo3 = new FooEvent(revision: 0, aggregateId: bar.id, userId: "1", data: "", count: 25, name: "Test2")
+            Event foo2 = createFooEvent(10000, "Test 3", oldDate)
+            Event foo3 = createFooEvent(25, "Test2")
 
             bar.applyChange(foo1)
             bar.applyChange(foo2)
@@ -61,15 +65,10 @@ class EventSourceServiceSpec extends Specification {
     void "#save should return true and update revisions for multiple aggregates" () {
         given:
             Bar bar = new Bar()
-            List<Event> barEvents = [new FooEvent(aggregateId: bar.id, count: 5, name: "test"),
-                                     new FooEvent(aggregateId: bar.id, count: 10, name: "test"),
-                                     new FooEvent(aggregateId: bar.id, count:7, name: "Blah")
-            ]
+            List<Event> barEvents = [createFooEvent(5, "Test"), createFooEvent(10, "test"), createFooEvent(7, "Blah")]
+
             Bar b2 = new Bar()
-            List<Event> b2Events = [new FooEvent(aggregateId: b2.id, count: 100, name: "test"),
-                                     new FooEvent(aggregateId: b2.id, count: 5, name: "test"),
-                                     new FooEvent(aggregateId: b2.id, count:75, name: "Blah2")
-            ]
+            List<Event> b2Events = [createFooEvent(100, "test"), createFooEvent(5, "test"), createFooEvent(75, "Blah2")]
 
         when:
             barEvents.each {bar.applyChange(it)}
@@ -89,10 +88,9 @@ class EventSourceServiceSpec extends Specification {
     void "Retrieving the current state of an Aggregate build up from the events" () {
         given:
             Bar bar = new Bar(id: UUID.randomUUID())
-
-            Event foo1 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 5, name: "Test")
-            Event foo2 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 100, name: "Test3")
-            Event foo3 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 25, name: "Test2")
+            Event foo1 = createFooEvent(5, "Test")
+            Event foo2 = createFooEvent(100, "Test3")
+            Event foo3 = createFooEvent(25, "Test2")
             bar.applyChanges([foo1, foo2, foo3])
             eventSourceService.save(bar)
 
@@ -108,16 +106,16 @@ class EventSourceServiceSpec extends Specification {
     void "Retrieving current state of multiple aggregates should build up from their respective events" () {
         given:
             Bar bar = new Bar(id: UUID.randomUUID())
-            Event foo1 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 5, name: "Test")
-            Event foo2 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 100, name: "Test3")
-            Event foo3 = new FooEvent(aggregateId: bar.id, userId: "1", data: "", count: 25, name: "Test2")
+            Event foo1 = createFooEvent(5, "Test")
+            Event foo2 = createFooEvent(100, "Test3")
+            Event foo3 = createFooEvent(25, "Test2")
             bar.applyChanges([foo1, foo2, foo3])
             eventSourceService.save(bar)
 
             Bar bar2 = new Bar(id: UUID.randomUUID())
-            Event foo4 = new FooEvent(aggregateId: bar2.id, userId: "1", data: "", count: 10, name: "Baz")
-            Event foo5 = new FooEvent(aggregateId: bar2.id, userId: "1", data: "", count: 999, name: "Baz3")
-            Event foo6 = new FooEvent(aggregateId: bar2.id, userId: "1", data: "", count: 1, name: "Baz2")
+            Event foo4 = createFooEvent(10, "Baz")
+            Event foo5 = createFooEvent(999, "Baz3")
+            Event foo6 = createFooEvent(1, "Baz2")
             bar2.applyChanges([foo4, foo5, foo6])
             eventSourceService.save(bar2)
 
@@ -132,6 +130,29 @@ class EventSourceServiceSpec extends Specification {
             check.name == "Test2"
             check2.count == 1010
             check2.name == "Baz2"
+    }
 
+    void "Loading up to a past date should restore an Aggregate to the state up to that date" () {
+        given:
+            Bar bar = new Bar()
+            bar.applyChanges([
+                    createFooEvent(5, "a", new Date()-30),
+                    createFooEvent(5, "ab", new Date()-25),
+                    createFooEvent(5, "abc", new Date()-20),
+                    createFooEvent(5, "abcd", new Date()-10),
+                    createFooEvent(5, "abcde", new Date()-5),
+                    createFooEvent(5, "abcdef", new Date()),
+            ])
+            eventSourceService.save(bar)
+
+        when:
+            Bar check = (Bar)eventSourceService.get(bar.id)
+            eventSourceService.loadHistoryUpTo(check, new Date()-8)
+        then:
+            bar.count == 30
+            bar.name == "abcdef"
+
+            check.count == 20
+            check.name == "abcd"
     }
 }
