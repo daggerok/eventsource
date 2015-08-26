@@ -42,8 +42,19 @@ An Event Class should mark any data that should be persisted as part of the even
 
 This behavior can be overwritten by implementing your own EventSerializer and calling setEventSerializer on an instance of EventSourceService.
 
+## Releasing to Bintray
 
+    gradle -DRELEASE_SCOPE=${SCOPE} \
+        -Prelease.stage=final \
+        -Prelease.scope=${SCOPE} \
+        clean build release bintrayUpload
+
+where `SCOPE` is one of
+
+* MAJOR
+* MINOR
+* PATCH
 
 ## TODO:
-* Implement Snapshot
 * cleanup apis on service to force more through EventSourceService
+
