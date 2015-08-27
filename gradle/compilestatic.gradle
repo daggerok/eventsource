@@ -1,0 +1,6 @@
+// @CompileStatic everything
+compileGroovy {
+    configure(groovyOptions) {
+        configurationScript = file("$rootDir/gradle/compiler-config.groovy")
+    }
+}
