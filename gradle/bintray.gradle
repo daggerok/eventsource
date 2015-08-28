@@ -42,16 +42,13 @@ bintray {
     publish = true
 
     pkg {
-        repo = 'maven'
+        repo = 'EventSource'
         name = "${project.name}"
-        //userOrg = 'thirdchannel'
+        userOrg = 'thirdchannel'
         desc = 'A small library for working with Event Source objects'
-        //websiteUrl = 'https://github.com/RSV2/eventsource'
-        websiteUrl = 'https://github.com/aaronzirbes/eventsource'
-        //issueTrackerUrl = 'https://github.com/RSV2/eventsource/issues'
-        issueTrackerUrl = 'https://github.com/aaronzirbes/eventsource/issues'
-        //vcsUrl = 'https://github.com/aaronzirbes/eventsource.git'
-        vcsUrl = 'https://github.com/aaronzirbes/eventsource.git'
+        websiteUrl = 'https://github.com/RSV2/eventsource'
+        issueTrackerUrl = 'https://github.com/RSV2/eventsource/issues'
+        vcsUrl = 'https://github.com/RSV2/eventsource.git'
         licenses = [ 'Apache-2.0' ]
         labels = [ 'cqrs', 'eventsource' ]
         publicDownloadNumbers = true
