@@ -4,6 +4,24 @@ This is a small library for working with Event Sourced aggregates and events. It
 querying, etc., but leaves it up to implementations to deal with the persistence specifics (e.g. using Postgres versus Redis,
 SpringTemplate versus JOOQ).
 
+## Usage
+
+Using this library in your gradle build
+
+Add this repo to your `.gradle` build file
+
+    repositories {
+        ...
+        maven { url 'http://dl.bintray.com/aaronzirbes/maven' }
+    }
+
+Then add this to your dependencies
+
+    dependencies {
+        ...
+        compile 'com.thirdchannel:eventsource:0.2.0'
+    }
+
 ## What is Event Sourcing?
 
 TODO, but see ()
@@ -42,8 +60,19 @@ An Event Class should mark any data that should be persisted as part of the even
 
 This behavior can be overwritten by implementing your own EventSerializer and calling setEventSerializer on an instance of EventSourceService.
 
+## Releasing to Bintray
 
+    gradle -DRELEASE_SCOPE=${SCOPE} \
+        -Prelease.stage=final \
+        -Prelease.scope=${SCOPE} \
+        clean build release bintrayUpload
+
+where `SCOPE` is one of
+
+* MAJOR
+* MINOR
+* PATCH
 
 ## TODO:
-* Implement Snapshot
 * cleanup apis on service to force more through EventSourceService
+
