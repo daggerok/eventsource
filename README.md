@@ -12,7 +12,7 @@ Add this repo to your `.gradle` build file
 
     repositories {
         ...
-        maven { url 'http://dl.bintray.com/aaronzirbes/maven' }
+        maven { url "https://dl.bintray.com/thirdchannel/EventSource/" }
     }
 
 Then add this to your dependencies
