@@ -18,6 +18,19 @@ plugins {
 apply plugin: 'groovy'
 apply plugin: "idea"
 apply plugin: "eclipse"
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.7.5.201505241946"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled true
+        html.destination "${buildDir}/jacocoHtml"
+    }
+}
 
 apply from: "${rootDir}/gradle/compilestatic.gradle"
 
