@@ -12,7 +12,7 @@ Add this repo to your `.gradle` build file
 
     repositories {
         ...
-        maven { url 'http://dl.bintray.com/aaronzirbes/maven' }
+        maven { url "https://dl.bintray.com/thirdchannel/EventSource/" }
     }
 
 Then add this to your dependencies
@@ -24,7 +24,15 @@ Then add this to your dependencies
 
 ## What is Event Sourcing?
 
-TODO, but see ()
+TODO, but see:
+* [“Event Sourcing” (Martin Fowler)](http://martinfowler.com/eaaDev/EventSourcing.html)
+* [Event Store & “Event Sourcing Basics”](http://docs.geteventstore.com/introduction/event-sourcing-basics/)
+* [Event Sourcing presentation by Greg Young](https://www.youtube.com/watch?v=JHGkaShoyNs)
+* [Clarified CQRS](http://udidahan.com/2009/12/09/clarified-cqrs/)
+
+Plus some self promotion:
+* [ES Presentation](https://www.youtube.com/watch?v=QWnuhlBwNh8)
+* [ES Reference App](https://github.com/spember/eventsource-ratpack-reference)
 
 
 ## Key Terms: Aggregates, Events, Snapshots
