@@ -41,14 +41,18 @@ class EventSourceService<A extends Aggregate> {
     }
 
     // find or create aggregate
-    A get(UUID aggregateId) {
+    Optional<A> get(UUID aggregateId) {
         aggregateService.get(aggregateId)
     }
 
-    A getCurrent(UUID aggregateId) {
-        A aggregate = get(aggregateId)
+    Optional<A> getCurrent(UUID aggregateId) {
+        Optional<A> maybeAggregate = get(aggregateId)
+        if(!maybeAggregate.isPresent()) {
+            return Optional.empty()
+        }
+        A aggregate = maybeAggregate.get()
         loadCurrentState(aggregate)
-        aggregate
+        Optional.ofNullable(aggregate)
     }
 
 

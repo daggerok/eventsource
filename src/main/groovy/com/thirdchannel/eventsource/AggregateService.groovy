@@ -12,7 +12,7 @@ interface AggregateService<T extends Aggregate> {
      * @param id
      * @return
      */
-    T get(UUID id)
+    Optional<T> get(UUID id)
 
     /**
      *
