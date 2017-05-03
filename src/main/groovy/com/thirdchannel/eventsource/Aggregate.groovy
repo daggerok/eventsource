@@ -1,8 +1,9 @@
 package com.thirdchannel.eventsource
-
+import groovy.transform.CompileStatic
 /**
  * @author steve pember
  */
+ @CompileStatic
 interface Aggregate {
     UUID getId()
     void setId(UUID id)

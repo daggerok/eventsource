@@ -127,7 +127,9 @@ class EventSourceService<A extends Aggregate> {
         int oldRevision = aggregate.revision
         // courtesy of burt:
         // update the aggregate revision and set the event equal to that new revision
-        aggregate.uncommittedEvents.each { event-> event.revision = ++aggregate.revision }
+        for(Event e : aggregate.uncommittedEvents){
+            e.setRevision(++aggregate.revision)
+        }
         if (oldRevision == 0) {
             return aggregateService.save(aggregate)
         } else {

@@ -3,6 +3,7 @@ package com.thirdchannel.eventsource.mock
 import com.thirdchannel.eventsource.Aggregate
 import com.thirdchannel.eventsource.AggregateService
 import com.thirdchannel.eventsource.aggregates.Bar
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 
 /**
@@ -12,6 +13,7 @@ import groovy.util.logging.Slf4j
  * @author Steve Pember
  */
 @Slf4j
+@CompileStatic
 class BarAggregateService implements AggregateService<Bar> {
 
     Map<UUID, ? extends Aggregate> database
@@ -22,11 +24,11 @@ class BarAggregateService implements AggregateService<Bar> {
 
 
     @Override
-    Bar get(UUID id) {
+    Optional<Bar> get(UUID id) {
         if (database.containsKey(id)) {
-            new Bar(id: id)
+            Optional.of(new Bar(id: id))
         } else {
-        null
+            Optional.empty()
         }
     }
 
@@ -34,22 +36,22 @@ class BarAggregateService implements AggregateService<Bar> {
     List<Bar> getAll(List<UUID> ids) {
         List<Bar> bars = []
         ids.each {UUID id ->
-            Bar bar = get(id)
-            if (bar) {
-                bars.add(bar)
+            Optional<Bar> maybeBar = get(id)
+            if (maybeBar.isPresent()) {
+                bars.add(maybeBar.get())
             }
         }
-
+        bars
     }
 
     @Override
     Bar getOrCreate(UUID id) {
-        get(id)?:new Bar()
+        get(id).orElse(new Bar())
     }
 
     @Override
     boolean exists(UUID id) {
-        database.containsKey(id)
+        get(id).isPresent()
     }
 
     @Override
@@ -59,7 +61,8 @@ class BarAggregateService implements AggregateService<Bar> {
 
     @Override
     int update(Bar aggregate, int expectedRevision) {
-        if (database[aggregate.id].revision == expectedRevision) {
+        Bar existing = database[aggregate.id] as Bar
+        if (existing.revision == expectedRevision) {
             database[aggregate.id] = aggregate
             1
         } else {

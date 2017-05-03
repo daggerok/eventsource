@@ -2,6 +2,7 @@ package com.thirdchannel.eventsource
 
 import com.thirdchannel.eventsource.aggregates.Bar
 import com.thirdchannel.eventsource.events.FooEvent
+import groovy.transform.CompileStatic
 import spock.lang.Specification
 
 /**
@@ -75,5 +76,4 @@ class AbstractAggregateSpec extends Specification {
         then:
             !bar.uncommittedEvents
     }
-
 }

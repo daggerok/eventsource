@@ -5,6 +5,7 @@ import com.thirdchannel.eventsource.Event
 import com.thirdchannel.eventsource.EventService
 import com.thirdchannel.eventsource.aggregates.Bar
 import com.thirdchannel.eventsource.events.FooEvent
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import spock.lang.Specification
 import spock.lang.Subject
@@ -17,7 +18,7 @@ import spock.lang.Subject
 class MockServiceSpec extends Specification {
 
 
-    AggregateService aggregateService
+    AggregateService<Bar> aggregateService
     EventService eventService
 
     def setup() {
@@ -36,13 +37,24 @@ class MockServiceSpec extends Specification {
                     new FooEvent(name: "third", revision: 3, dateEffective: new Date()-5, aggregateId: bar.id)
             ])
         when:
-            List<? extends Event> events = eventService.findAllEventsForAggregate(bar)
+            List<FooEvent> events = eventService.findAllEventsForAggregate(bar).collect { Event event -> (FooEvent) event }
         then:
             events.size() == 3
-            events[0].name == "first"
-            events[1].name == "third"
-            events[2].name == "second"
+            events.get(0).name == "first"
+            events.get(1).name == "third"
+            events.get(2).name == "second"
     }
 
+    void "Attempting to get an aggregate from the aggregate service should return an optional that indicates the aggregate's existence"() {
+        when:
+        Bar bar = new Bar()
+        aggregateService.save(bar)
+        Optional<Bar> existing = aggregateService.get(bar.id)
+        Optional<Bar> notExisting = aggregateService.get(UUID.randomUUID())
+        then:
+        existing.isPresent()
+        existing.get().id == bar.id
+        !notExisting.isPresent()
+    }
 
 }

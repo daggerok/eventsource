@@ -4,6 +4,7 @@ import com.thirdchannel.eventsource.aggregates.Bar
 import com.thirdchannel.eventsource.events.FooEvent
 import com.thirdchannel.eventsource.mock.BarAggregateService
 import com.thirdchannel.eventsource.mock.MockEventService
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import spock.lang.Specification
 
@@ -13,7 +14,7 @@ import spock.lang.Specification
 @Slf4j
 class EventSourceServiceSpec extends Specification {
 
-    private EventSourceService eventSourceService
+    private EventSourceService<Bar> eventSourceService
 
     private createFooEvent(int count, String name, Date dateEffective=null) {
         new FooEvent(count: count, name: name, userId: "test@test.com", data:"", dateEffective: dateEffective)
@@ -95,7 +96,7 @@ class EventSourceServiceSpec extends Specification {
             eventSourceService.save(bar)
 
         when:
-            Bar check = (Bar)eventSourceService.get(bar.id)
+            Bar check = eventSourceService.get(bar.id).get()
             eventSourceService.loadCurrentState(check)
 
         then:
@@ -122,8 +123,8 @@ class EventSourceServiceSpec extends Specification {
 
 
         when:
-            Bar check = (Bar)eventSourceService.get(bar.id)
-            Bar check2 = (Bar)eventSourceService.get(bar2.id)
+            Bar check = eventSourceService.get(bar.id).get()
+            Bar check2 = eventSourceService.get(bar2.id).get()
             eventSourceService.loadCurrentState([check, check2])
         then:
             check.count == 130
@@ -146,7 +147,7 @@ class EventSourceServiceSpec extends Specification {
             eventSourceService.save(bar)
 
         when:
-            Bar check = (Bar)eventSourceService.get(bar.id)
+            Bar check = eventSourceService.get(bar.id).get()
             eventSourceService.loadHistoryUpTo(check, new Date()-8)
         then:
             bar.count == 30
@@ -154,5 +155,17 @@ class EventSourceServiceSpec extends Specification {
 
             check.count == 20
             check.name == "abcd"
+    }
+
+    void "Attempting to get an aggregate should return an optional that indicates the aggregate's existence"() {
+        when:
+        Bar bar = new Bar()
+        eventSourceService.save(bar)
+        Optional<Bar> existing = eventSourceService.get(bar.id)
+        Optional<Bar> notExisting = eventSourceService.get(UUID.randomUUID())
+        then:
+        existing.isPresent()
+        existing.get().id == bar.id
+        !notExisting.isPresent()
     }
 }
