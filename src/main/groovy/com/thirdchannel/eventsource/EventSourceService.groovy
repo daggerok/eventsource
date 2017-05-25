@@ -125,15 +125,11 @@ class EventSourceService<A extends Aggregate> {
      */
     protected int saveAggregate(A aggregate) {
         int oldRevision = aggregate.revision
-        // courtesy of burt:
-        // update the aggregate revision and set the event equal to that new revision
-        for(Event e : aggregate.uncommittedEvents){
-            e.setRevision(++aggregate.revision)
-        }
-        if (oldRevision == 0) {
-            return aggregateService.save(aggregate)
-        } else {
+        aggregate.uncommittedEvents.each { it.revision = ++aggregate.revision }
+        if(aggregateService.exists(aggregate.id)) {
             return aggregateService.update(aggregate, oldRevision)
+        } else {
+            return aggregateService.save(aggregate)
         }
     }
 
