@@ -92,28 +92,31 @@ class EventSourceService<A extends Aggregate> {
 
         rx.Observable.from(aggregates)
         // this next does io!
-        .filter({A aggregate -> 1 == saveAggregate(aggregate)})
+        .filter({ A aggregate -> 1 == saveAggregate(aggregate) })
         // at this point we should only those aggregates which were successful
-        .map({A aggregate->
+        .map({ A aggregate->
             serializeEvents(aggregate.uncommittedEvents)
             aggregate
         })
-        .map({A aggregate->
-            rx.Observable.from(aggregate.uncommittedEvents)
-        } as Func1)
+        .map({ A aggregate -> rx.Observable.from(aggregate.uncommittedEvents) } as Func1)
         .flatMap({it})
         .buffer(500)
-        .subscribe({List<? extends Event> events->
+        .map({ List<? extends Event> events ->
             eventService.save(events)
+        } as Func1)
+        .all({ boolean eventsSaved -> eventsSaved } as Func1)
+        .subscribe({ boolean allSaved ->
+            result = allSaved
         }, {
             log.error("Could not save: ", it )
         }, {
-            aggregates.each {
-                ((A)it).markEventsAsCommitted()
+            if(result) {
+                aggregates.each {
+                    ((A)it).markEventsAsCommitted()
+                }
             }
-            result = true
-            }
-        )
+        })
+
         result
     }
 
