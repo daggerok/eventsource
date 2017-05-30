@@ -102,7 +102,13 @@ class EventSourceService<A extends Aggregate> {
         .flatMap({it})
         .buffer(500)
         .map({ List<? extends Event> events ->
-            eventService.save(events)
+            boolean eventsSaved = eventService.save(events)
+
+            if(!eventsSaved) {
+                log.warn("Failed to save events")
+            }
+
+            eventsSaved
         } as Func1)
         .all({ boolean eventsSaved -> eventsSaved } as Func1)
         .subscribe({ boolean allSaved ->
