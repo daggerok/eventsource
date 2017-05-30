@@ -39,8 +39,8 @@ class EventSourceServiceSpec extends Specification {
             bar.applyChange(foo2)
             bar.applyChange(foo3)
 
-            // at this point, the revisions have not yet been updated
-            then:
+        // at this point, the revisions have not yet been updated
+        then:
             bar.revision == 0
             foo1.revision == 0
             foo1.dateEffective == foo1.date
@@ -61,6 +61,34 @@ class EventSourceServiceSpec extends Specification {
             foo1.data == '{"name":"Test","count":5}'
             foo2.revision == 2
             foo3.revision == 3
+    }
+
+    void "#save should return false when events save fails"() {
+        given:
+            MockEventService eventService = Mock(MockEventService)
+
+            eventService.save(_) >> false
+
+            EventSourceService<Bar> eventSourceService = new EventSourceService<Bar>()
+            eventSourceService.aggregateService = new BarAggregateService()
+            eventSourceService.eventService = eventService
+
+            Bar bar = new Bar()
+            Event foo1 = createFooEvent(5, "Test")
+            Date oldDate = new Date()-5
+            Event foo2 = createFooEvent(10000, "Test 3", oldDate)
+            Event foo3 = createFooEvent(25, "Test2")
+
+            bar.applyChange(foo1)
+            bar.applyChange(foo2)
+            bar.applyChange(foo3)
+
+        when:
+            boolean result = eventSourceService.save(bar)
+
+        then:
+            !result
+            bar.uncommittedEvents.size() == 3
     }
 
     void "#save should return true and update revisions for multiple aggregates" () {
