@@ -57,7 +57,7 @@ release {
     // need to specify the repository to interact with
     grgit = Grgit.open(project.file('.'))
 
-    defaultVersionStrategy = Strategies.SNAPSHOT
+    defaultVersionStrategy = Strategies.FINAL
 
     // the approach to creating tags can also be modified
     tagStrategy {
