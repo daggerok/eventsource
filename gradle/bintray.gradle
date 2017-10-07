@@ -33,29 +33,28 @@ publishing {
 
 bintray {
 
-    user = project.hasProperty('bintrayUsername') ? project.getProperty('bintrayUsername') : ''
-    key = project.hasProperty('bintrayApiKey') ? project.getProperty('bintrayApiKey') : ''
+    user = project.hasProperty("bintrayUsername") ? project.getProperty("bintrayUsername") : ""
+    key = project.hasProperty("bintrayApiKey") ? project.getProperty("bintrayApiKey") : ""
 
-    publications = [ 'mavenJava' ]
+    publications = [ "mavenJava" ]
 
     dryRun = false
     publish = true
 
     pkg {
-        repo = 'EventSource'
-        name = "${project.name}"
-        userOrg = 'thirdchannel'
-        desc = 'A small library for working with Event Source objects'
-        websiteUrl = 'https://github.com/RSV2/eventsource'
-        issueTrackerUrl = 'https://github.com/RSV2/eventsource/issues'
-        vcsUrl = 'https://github.com/RSV2/eventsource.git'
-        licenses = [ 'Apache-2.0' ]
-        labels = [ 'cqrs', 'eventsource' ]
+        repo = "EventSource"
+        name = "$project.name"
+        userOrg = "thirdchannel"
+        desc = "A small library for working with Event Source objects"
+        websiteUrl = "https://github.com/RSV2/eventsource"
+        issueTrackerUrl = "https://github.com/RSV2/eventsource/issues"
+        vcsUrl = "https://github.com/RSV2/eventsource.git"
+        licenses = [ "Apache-2.0" ]
+        labels = [ "cqrs", "eventsource" ]
         publicDownloadNumbers = true
         version {
-            name = "${project.version}"
-            vcsTag = "${version}"
+            name = "$project.version"
+            vcsTag = "$version"
         }
     }
 }
-
